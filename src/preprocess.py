@@ -17,40 +17,50 @@ stop_words = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you'
               "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn',
               "wouldn't", ",", "?", ".", "'s", "'t", "n't"]
 
-with open('../data/train', 'r') as train:
-    data = train.read()
+np.random.seed(16)
+with open('../data/dataset', 'r') as dataset:
+    data = dataset.read()
+    data_list = data.split('\n')
+
+with open('../data/dev', 'w') as dev:
+    dev_index = np.random.randint(0, len(data_list), int(len(data_list) * 0.1))
+    dev_set = [data_list[i] for i in dev_index]
+    dev.write('\n'.join(dev_set))
+
+with open('../data/train', 'w') as train:
+    train_set = [s for s in data_list if s not in dev_set]
+    train_data = '\n'.join(train_set)
+    train.write(train_data)
 
 with open('../data/corpus', 'w') as corpus:
-    data = re.sub(r'\w+:\w+\s', '', data)
-    data = data.lower()
-    corpus.write(data)
+    train_data = re.sub(r'\w+:\w+\s', '', train_data)
+    train_data = train_data.lower()
+    corpus.write(train_data)
 
 with open('../data/dictionary', 'w') as dictionary:
-    data_list = data.split()
-    print(len(data_list))
-
-    data_dict = {}
-    for d in data_list:
+    train_list = train_data.split()
+    print(len(train_list))
+    train_dict = {}
+    for d in train_list:
         if d in stop_words:
             continue
-        if d in data_dict:
-            data_dict[d] += 1
+        if d in train_dict:
+            train_dict[d] += 1
         else:
-            data_dict[d] = 1
-    data_dict = dict(sorted(data_dict.items(), key=lambda x: x[1], reverse=True))
+            train_dict[d] = 1
+    train_dict = dict(sorted(train_dict.items(), key=lambda x: x[1], reverse=True))
 
-    word_count = sum(data_dict.values())
+    word_count = sum(train_dict.values())
     print(word_count)
     cover = 0
     vocabs = []
-    for key, value in data_dict.items():
-        if value > 2:  # k = 3, cover rate = 75.6%
+    for key, value in train_dict.items():
+        if value > 2:  # k = 3, cover rate = 74.3%
             dictionary.write("%s %d\n" % (key, value))
             vocabs.append(key)
             cover += value
     print("cover: %d" % cover)
 
-np.random.seed(16)
 unk = list(np.random.rand(50))
 unk = [str(round(v, 6)) for v in unk]
 unk.insert(0, 'unk')
