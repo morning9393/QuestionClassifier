@@ -51,9 +51,28 @@ with open('../data/dictionary', 'w') as dictionary:
     print("cover: %d" % cover)
 
 np.random.seed(16)
-with open('../data/random_embedding', 'w') as embedding:
+unk = list(np.random.rand(50))
+unk = [str(round(v, 6)) for v in unk]
+unk.insert(0, 'unk')
+with open('../data/random_embedding', 'w') as random_embd:
+    random_embd.write(' '.join(unk) + '\n')
     for vocab in vocabs:
-        vec = list(np.random.rand(30))
-        vec = [str(v) for v in vec]
+        vec = list(np.random.rand(50))
+        vec = [str(round(v, 6)) for v in vec]
         vec.insert(0, vocab)
-        embedding.write(' '.join(vec) + '\n')
+        random_embd.write(' '.join(vec) + '\n')
+
+with open('../data/glove.6B.50d.txt', 'r') as glove:
+    glove_dict = {}
+    for line in glove:
+        glove_word = line.split()
+        key = glove_word.pop(0)
+        glove_dict[key] = glove_word
+
+with open('../data/glove_embedding', 'w') as glove_embd:
+    glove_embd.write(' '.join(unk) + '\n')
+    for vocab in vocabs:
+        if vocab in glove_dict.keys():
+            vec = glove_dict[vocab]
+            vec.insert(0, vocab)
+            glove_embd.write(' '.join(vec) + '\n')
