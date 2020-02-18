@@ -17,6 +17,7 @@ stop_words = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you'
               "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn',
               "wouldn't", ",", "?", ".", "'s", "'t", "n't"]
 
+
 np.random.seed(16)
 with open('../data/dataset', 'r') as dataset:
     data = dataset.read()
