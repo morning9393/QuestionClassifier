@@ -4,6 +4,7 @@ import torch
 embedding = {}
 stop_words = []
 train_set = []
+dev_set = []
 
 
 def load_embedding():
@@ -32,9 +33,26 @@ def load_train():
             train_set.append((label, bag_of_word(question)))
 
 
-def write_sentence_rep():
-    with open('../data/sentence_rep', 'w') as sentence_rep:
+def load_dev():
+    with open('../data/dev', 'r') as dev:
+        global dev_set
+        for line in dev:
+            pattern = re.compile(r'\w+:\w+\s')
+            label = pattern.search(line).group().strip()
+            question = pattern.sub('', line, 1).lower()
+            dev_set.append((label, bag_of_word(question)))
+
+
+def write_train_sentence_rep():
+    with open('../data/train_sentence_rep', 'w') as sentence_rep:
         for label, rep in train_set:
+            rep_str = [str(round(v.item(), 6)) for v in rep]
+            sentence_rep.write('%s %s\n' % (label, ' '.join(rep_str)))
+
+
+def write_dev_sentence_rep():
+    with open('../data/dev_sentence_rep', 'w') as sentence_rep:
+        for label, rep in dev_set:
             rep_str = [str(round(v.item(), 6)) for v in rep]
             sentence_rep.write('%s %s\n' % (label, ' '.join(rep_str)))
 
@@ -53,4 +71,6 @@ def bag_of_word(question):
 load_embedding()
 load_stop_words()
 load_train()
-write_sentence_rep()
+load_dev()
+write_train_sentence_rep()
+write_dev_sentence_rep()

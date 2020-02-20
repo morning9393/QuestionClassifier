@@ -73,3 +73,13 @@ with open('../data/glove_embedding', 'w') as glove_embd:
             vec = glove_dict[vocab]
             vec.insert(0, vocab)
             glove_embd.write(' '.join(vec) + '\n')
+
+with open('../data/labels', 'w') as labels:
+    label_set = set([])
+    for data in data_list:
+        pattern = re.compile(r'\w+:\w+\s')
+        label = pattern.search(data).group().strip()
+        label_set.add(label)
+    label_list = list(label_set)
+    label_list.sort()
+    labels.write('\n'.join(label_list))
