@@ -13,7 +13,7 @@ def load_stop_words():
 
 
 def load_glove():
-    with open('../data/glove.6B.50d.txt', 'r') as glove_file:
+    with open('../data/glove.200d.small.txt', 'r') as glove_file:
         glove_dict = {}
         for line in glove_file:
             glove_word = line.split()
@@ -94,7 +94,7 @@ def write_vocabulary():
 
 def generate_pre_train_embedding():
     pre_train_embedding = []
-    unk = list(np.random.rand(50))
+    unk = list(np.random.rand(200))
     unk = [str(round(v, 6)) for v in unk]
     unk.insert(0, '#unk#')
     pre_train_embedding.append(' '.join(unk))

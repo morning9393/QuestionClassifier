@@ -25,17 +25,21 @@ def load_questions(path):
         return reps
 
 
+def standardize(reps):
+    matrix = [rep[1] for rep in reps]
+    matrix = np.array(matrix)
+    mean = np.mean(matrix, axis=0)
+    sigma = np.std(matrix, axis=0)
+    matrix = (matrix - mean) / sigma
+    reps_std = []
+    for i in range(0, len(reps)):
+        reps_std.append((reps[i][0], list(matrix[i])))
+    return reps_std
+
+
 def load_labels():
     with open('../data/labels.txt', 'r') as labels_file:
         return labels_file.read().split('\n')
-        # full_labels = labels.read().split('\n')
-        # super_label_set = set([])
-        # for label in full_labels:
-        #     super_label = to_super_label(label)
-        #     super_label_set.add(super_label)
-        # supper_label_list = list(super_label_set)
-        # supper_label_list.sort()
-        # return supper_label_list
 
 
 def to_super_label(label):
@@ -58,8 +62,6 @@ class QuestionSet(Dataset):
         question = self.questions[index][1]
         question = torch.tensor(question, requires_grad=True)
         label = self.labels.index(self.questions[index][0])
-        # label = self.questions[index][0]
-        # label = self.labels.index(to_super_label(label))
         return label, question
 
     def __len__(self):
@@ -70,15 +72,14 @@ class Net(torch.nn.Module):
 
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = torch.nn.Linear(50, 50)
-        self.fc2 = torch.nn.Linear(50, 50)
+        self.fc1 = torch.nn.Linear(200, 64)
+        self.fc2 = torch.nn.Linear(64, 50)
 
     def forward(self, x):
         out = self.fc1(x)
         out = torch.nn.functional.relu(out)
         out = self.fc2(out)
-        predicted = torch.nn.functional.softmax(out, dim=1)
-        return predicted
+        return out
 
 
 setup_seed(16)
@@ -87,19 +88,21 @@ DEV_REP_PATH = '../data/dev_rep.txt'
 
 net = Net()
 criterion = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(net.parameters(), lr=1)
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
+optimizer = torch.optim.SGD(net.parameters(), lr=0.1)
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.5)
 dataLoader = get_data_loader(TRAIN_REP_PATH, batch_size=1)
 
 for e in range(0, 100):
+    error = 0
     for t, (cla, train) in enumerate(dataLoader):
         optimizer.zero_grad()
         cla_pred = net(train)
         loss = criterion(cla_pred, cla)
+        error += loss.item()
         loss.backward()
         optimizer.step()
     scheduler.step()
-    print('%d epoch finish' % (e + 1))
+    print('%d epoch finish, loss: %f' % (e + 1, error / dataLoader.__len__()))
 torch.save(net, '../data/model.bin')
 
 # --------------- train set test----------------

@@ -20,7 +20,7 @@ def load_stop_words():
 
 def bag_of_word(question, embedding, stop_words):
     bag = set(word for word in question.split() if word not in stop_words)
-    vector = torch.zeros(50)
+    vector = torch.zeros(200)
     for word in bag:
         if word in embedding.keys():
             vector += torch.tensor(embedding[word])
