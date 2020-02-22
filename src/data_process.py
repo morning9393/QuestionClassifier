@@ -95,7 +95,6 @@ def write_vocabulary():
 def generate_pre_train_embedding():
     pre_train_embedding = []
     unk = list(np.random.rand(50))
-    # unk = list(np.random.randn(50))
     unk = [str(round(v, 6)) for v in unk]
     unk.insert(0, '#unk#')
     pre_train_embedding.append(' '.join(unk))
@@ -116,8 +115,8 @@ def write_pre_train_embedding():
 
 
 np.random.seed(16)
-# write_train_dev()
-# write_labels()
-# write_corpus()
-# write_vocabulary()
+write_train_dev()
+write_labels()
+write_corpus()
+write_vocabulary()
 write_pre_train_embedding()

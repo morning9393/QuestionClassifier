@@ -18,10 +18,9 @@ def load_stop_words():
         return stop_words_file.read().split()
 
 
-def bag_of_word(question):
-    bag = set(word for word in question.split() if word not in load_stop_words())
+def bag_of_word(question, embedding, stop_words):
+    bag = set(word for word in question.split() if word not in stop_words)
     vector = torch.zeros(50)
-    embedding = load_embedding()
     for word in bag:
         if word in embedding.keys():
             vector += torch.tensor(embedding[word])
@@ -33,11 +32,13 @@ def bag_of_word(question):
 def load_data_to_vector(path):
     with open(path, 'r') as data_file:
         data = []
+        embedding = load_embedding()
+        stop_words = load_stop_words()
         for line in data_file:
             pattern = re.compile(r'\w+:\w+\s')
             label = pattern.search(line).group().strip()
             question = pattern.sub('', line, 1).lower()
-            data.append((label, bag_of_word(question)))
+            data.append((label, bag_of_word(question, embedding, stop_words)))
         return data
 
 
@@ -67,5 +68,3 @@ def write_dev_rep():
 
 write_train_rep()
 write_dev_rep()
-
-
