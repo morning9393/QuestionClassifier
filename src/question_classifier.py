@@ -91,7 +91,7 @@ optimizer = torch.optim.SGD(net.parameters(), lr=1)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 dataLoader = get_data_loader(TRAIN_REP_PATH, batch_size=1)
 
-for e in range(0, 200):
+for e in range(0, 100):
     for t, (cla, train) in enumerate(dataLoader):
         optimizer.zero_grad()
         cla_pred = net(train)

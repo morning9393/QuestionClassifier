@@ -94,14 +94,15 @@ def write_vocabulary():
 
 def generate_pre_train_embedding():
     pre_train_embedding = []
-    unk = list(np.random.randn(50))
+    unk = list(np.random.rand(50))
+    # unk = list(np.random.randn(50))
     unk = [str(round(v, 6)) for v in unk]
     unk.insert(0, '#unk#')
     pre_train_embedding.append(' '.join(unk))
-    vocabulary = generate_vocabulary().keys()
+    vocabulary = generate_vocabulary()
     glove = load_glove()
-    for vocab in vocabulary:
-        if vocab in glove.keys():
+    for vocab in vocabulary.keys():
+        if vocab in glove.keys() and vocabulary[vocab] > 2:  # k = 3
             vec = glove[vocab]
             vec.insert(0, vocab)
             pre_train_embedding.append(' '.join(vec))
@@ -115,8 +116,8 @@ def write_pre_train_embedding():
 
 
 np.random.seed(16)
-write_train_dev()
-write_labels()
-write_corpus()
-write_vocabulary()
+# write_train_dev()
+# write_labels()
+# write_corpus()
+# write_vocabulary()
 write_pre_train_embedding()
