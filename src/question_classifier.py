@@ -26,8 +26,8 @@ def load_questions(path):
 
 
 def load_labels():
-    with open('../data/labels', 'r') as labels:
-        return labels.read().split('\n')
+    with open('../data/labels.txt', 'r') as labels_file:
+        return labels_file.read().split('\n')
         # full_labels = labels.read().split('\n')
         # super_label_set = set([])
         # for label in full_labels:
@@ -82,8 +82,8 @@ class Net(torch.nn.Module):
 
 
 setup_seed(16)
-TRAIN_REP_PATH = '../data/train_sentence_rep'
-DEV_REP_PATH = '../data/dev_sentence_rep'
+TRAIN_REP_PATH = '../data/train_rep.txt'
+DEV_REP_PATH = '../data/dev_rep.txt'
 
 net = Net()
 criterion = torch.nn.CrossEntropyLoss()
@@ -91,7 +91,7 @@ optimizer = torch.optim.SGD(net.parameters(), lr=1)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 dataLoader = get_data_loader(TRAIN_REP_PATH, batch_size=1)
 
-for e in range(0, 100):
+for e in range(0, 200):
     for t, (cla, train) in enumerate(dataLoader):
         optimizer.zero_grad()
         cla_pred = net(train)
