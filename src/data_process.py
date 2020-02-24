@@ -61,12 +61,6 @@ def generate_corpus():
     return questions
 
 
-def write_corpus():
-    with open('../data/corpus.txt', 'w') as corpus_file:
-        questions = generate_corpus()
-        corpus_file.write('\n'.join(questions))
-
-
 def generate_vocabulary():
     stop_words = load_stop_words()
     words = ' '.join(generate_corpus()).split()
@@ -92,31 +86,7 @@ def write_vocabulary():
         vocabulary_file.write('\n'.join(vocabs_str))
 
 
-def generate_pre_train_embedding():
-    pre_train_embedding = []
-    unk = list(np.random.rand(200))
-    unk = [str(round(v, 6)) for v in unk]
-    unk.insert(0, '#unk#')
-    pre_train_embedding.append(' '.join(unk))
-    vocabulary = generate_vocabulary()
-    glove = load_glove()
-    for vocab in vocabulary.keys():
-        if vocab in glove.keys() and vocabulary[vocab] > 2:  # k = 3
-            vec = glove[vocab]
-            vec.insert(0, vocab)
-            pre_train_embedding.append(' '.join(vec))
-    return pre_train_embedding
-
-
-def write_pre_train_embedding():
-    with open('../data/embedding_glove.txt', 'w') as embedding_file:
-        pre_train_embedding = generate_pre_train_embedding()
-        embedding_file.write('\n'.join(pre_train_embedding))
-
-
 np.random.seed(16)
 write_train_dev()
 write_labels()
-write_corpus()
 write_vocabulary()
-write_pre_train_embedding()
