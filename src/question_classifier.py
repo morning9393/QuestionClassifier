@@ -6,7 +6,7 @@ import numpy as np
 
 class QuestionSet(Dataset):
 
-    def __init__(self, data_path, vocabulary_path, labels_path, stop_words_path, pre_train_path=None):
+    def __init__(self, data, vocabulary_path, labels_path, stop_words_path, pre_train_path=None):
         self.dataset = []
         self.labels = []
         self.vocabulary = []
@@ -14,7 +14,10 @@ class QuestionSet(Dataset):
         self.pre_weight = []
         self.pre_train_words = {}
         self.pre_train_path = pre_train_path
-        self.load_dataset(data_path)
+        if type(data) == str:
+            self.load_dataset(data)
+        else:
+            self.dataset = data
         self.load_labels(labels_path)
         self.load_vocabulary(vocabulary_path)
         self.load_stop_words(stop_words_path)
@@ -32,9 +35,7 @@ class QuestionSet(Dataset):
     def load_dataset(self, path):
         with open(path, 'r') as dataset_file:
             for line in dataset_file:
-                sample = line.split(' ', 1)
-                label = sample[0]
-                question = sample[1]
+                label, question = line.split(' ', 1)
                 self.dataset.append((label, question))
 
     def load_labels(self, path):
@@ -196,5 +197,4 @@ def run():
     acc_rate = float(acc) / float(devDataLoader.__len__())
     print('dev set acc_rate: ' + str(acc_rate))
 
-
-run()
+# run()
