@@ -1,4 +1,3 @@
-import re
 import numpy as np
 
 
@@ -41,8 +40,7 @@ def write_train_dev():
 def generate_labels():
     label_set = set([])
     for data in load_data():
-        pattern = re.compile(r'\w+:\w+\s')
-        label = pattern.search(data).group().strip()
+        label = data.split(' ', 1)[0]
         label_set.add(label)
     labels = list(label_set)
     labels.sort()
@@ -57,7 +55,7 @@ def write_labels():
 
 def generate_corpus():
     data = load_data()
-    questions = [re.sub(r'\w+:\w+\s', '', s).lower() for s in data]
+    questions = [s.split(' ', 1)[1].lower() for s in data]
     return questions
 
 
