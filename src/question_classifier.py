@@ -1,36 +1,22 @@
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 import random
 import numpy as np
+from src import model as md
 
 
-class QuestionSet(Dataset):
+class QuestionClassifier:
 
-    def __init__(self, data, vocabulary_path, labels_path, stop_words_path, pre_train_path=None):
+    def __init__(self, ensemble_size, data_path, vocabulary_path, labels_path, stop_words_path, pre_train_path=None):
         self.dataset = []
-        self.labels = []
-        self.vocabulary = []
-        self.stop_words = []
-        self.pre_weight = []
-        self.pre_train_words = {}
+        self.subsets = []
+        self.classifiers = []
+        self.vocabulary_path = vocabulary_path
+        self.labels_path = labels_path
+        self.stop_words_path = stop_words_path
         self.pre_train_path = pre_train_path
-        if type(data) == str:
-            self.load_dataset(data)
-        else:
-            self.dataset = data
-        self.load_labels(labels_path)
-        self.load_vocabulary(vocabulary_path)
-        self.load_stop_words(stop_words_path)
-
-    def __getitem__(self, index):
-        label, question = self.dataset[index]
-        label = self.label2index(label)
-        question = self.question2indexes(question)
-        question = torch.LongTensor(question)
-        return label, question
-
-    def __len__(self):
-        return len(self.dataset)
+        self.load_dataset(data_path)
+        self.init_subsets(ensemble_size)
 
     def load_dataset(self, path):
         with open(path, 'r') as dataset_file:
@@ -38,100 +24,65 @@ class QuestionSet(Dataset):
                 label, question = line.split(' ', 1)
                 self.dataset.append((label, question))
 
-    def load_labels(self, path):
-        with open(path, 'r') as labels_file:
-            self.labels = labels_file.read().split('\n')
-
-    def load_vocabulary(self, path):
-        with open(path, 'r') as vocabulary_file:
-            self.vocabulary.append('#unk#')
-            if self.pre_train_path is None:
-                for line in vocabulary_file:
-                    pair = line.split()
-                    if int(pair[1]) > 2:  # k = 3
-                        self.vocabulary.append(pair[0])
-            else:
-                self.load_pre_train(self.pre_train_path)
-                self.pre_weight.append(np.random.rand(200))
-                for line in vocabulary_file:
-                    pair = line.split()
-                    if int(pair[1]) > 2 and pair[0] in self.pre_train_words.keys():  # k = 3
-                        self.vocabulary.append(pair[0])
-                        self.pre_weight.append(self.pre_train_words[pair[0]])
-
-    def load_pre_train(self, path):
-        with open(path, 'r') as pre_train_file:
-            for line in pre_train_file:
-                pair = line.split(' ')
-                key = pair[0]
-                value = [float(x) for x in pair[1:]]
-                self.pre_train_words[key] = value
-
-    def load_stop_words(self, path):
-        with open(path, 'r') as stop_words_file:
-            self.stop_words = stop_words_file.read().split()
-
-    def vocab_size(self):
-        return len(self.vocabulary)
-
-    def label_size(self):
-        return len(self.labels)
-
-    def question2indexes(self, question):
-        question = question.lower()
-        indexes = []
-        for word in question.split():
-            if word in self.stop_words:
-                continue
-            if word in self.vocabulary:
-                indexes.append(self.vocabulary.index(word))
-            else:
-                indexes.append(self.vocabulary.index('#unk#'))
-        return indexes
-
-    def label2index(self, label):
-        return self.labels.index(label)
-
-    def index2label(self, index):
-        return self.labels[index.item()]
-
-    def get_pre_train_weight(self):
-        return torch.FloatTensor(self.pre_weight)
-
-
-class Net(torch.nn.Module):
-
-    def __init__(self, vocab_size, embedding_dim, hidden_size, label_size, model='bow', pre_train_weight=None,
-                 freeze=True):
-        super(Net, self).__init__()
-        self.model = model
-        self.hidden_state_size = int(embedding_dim / 2)
-        if pre_train_weight is None:
-            self.embedding = torch.nn.Embedding(vocab_size, embedding_dim)
-            self.embeddingBag = torch.nn.EmbeddingBag(vocab_size, embedding_dim)
+    def init_subsets(self, ensemble_size):
+        if ensemble_size < 2:
+            sub_dataset = md.QuestionSet(self.dataset, self.vocabulary_path, self.labels_path,
+                                         self.stop_words_path, self.pre_train_path)
+            self.subsets.append(sub_dataset)
         else:
-            self.embedding = torch.nn.Embedding.from_pretrained(pre_train_weight, freeze=freeze)
-            self.embeddingBag = torch.nn.EmbeddingBag.from_pretrained(pre_train_weight, freeze=freeze)
-        self.bilstm = torch.nn.LSTM(embedding_dim, self.hidden_state_size, bidirectional=True)
-        self.fc1 = torch.nn.Linear(embedding_dim, hidden_size)
-        self.fc2 = torch.nn.Linear(hidden_size, label_size)
+            for i in range(0, ensemble_size):
+                sample = self.bootstrapping()
+                sub_dataset = md.QuestionSet(sample, self.vocabulary_path, self.labels_path, self.stop_words_path,
+                                             self.pre_train_path)
+                self.subsets.append(sub_dataset)
 
-    def forward(self, x):
-        if self.model == 'bilstm':
-            embeds = self.embedding(x)
-            seq_len = len(x[0])
-            bilitm_out, _ = self.bilstm(embeds.view(seq_len, 1, -1))
-            out = torch.cat((bilitm_out[0, 0, self.hidden_state_size:],
-                             bilitm_out[seq_len - 1, 0, :self.hidden_state_size])).view(1, -1)
-        else:  # default: bag of word
-            out = self.embeddingBag(x)
-        out = self.fc1(out)
-        out = torch.nn.functional.relu(out)
-        out = self.fc2(out)
-        return out
+    def bootstrapping(self):
+        random_idx = np.random.choice(range(0, len(self.dataset)), len(self.dataset), replace=True)
+        return [self.dataset[i] for i in random_idx]
+
+    def train(self, model, embedding_dim, lstm_hidden, fc_input, fc_hidden, epochs, lr, freeze=True):
+        for subset in self.subsets:
+            loader = DataLoader(subset)
+            net = md.Net(model, subset.vocab_size(), embedding_dim, lstm_hidden, fc_input, fc_hidden,
+                            subset.label_size(), pre_train_weight=subset.get_pre_train_weight(), freeze=freeze)
+            criterion = torch.nn.CrossEntropyLoss()
+            optimizer = torch.optim.SGD(net.parameters(), lr=lr)
+            print('%d classifier begin' % (self.subsets.index(subset) + 1))
+            for e in range(0, epochs):
+                error = 0
+                for t, (cla, train) in enumerate(loader):
+                    optimizer.zero_grad()
+                    cla_pred = net(train)
+                    loss = criterion(cla_pred, cla)
+                    error += loss.item()
+                    loss.backward()
+                    optimizer.step()
+                print('%d epoch finish, loss: %f' % (e + 1, error / loader.__len__()))
+            self.classifiers.append(net)
+
+    def test(self, data_set, print_detail=False):
+        data_loader = DataLoader(data_set)
+        acc = 0
+        for t, (cla, test) in enumerate(data_loader):
+            vote = {}
+            for net in self.classifiers:
+                output = net(test)
+                _, pred = torch.max(output.data, 1)
+                pred = data_set.index2label(pred)
+                if pred in vote.keys():
+                    vote[pred] += 1
+                else:
+                    vote[pred] = 1
+            voted_pred = sorted(vote.items(), key=lambda x: x[1], reverse=True)[0][0]
+            y = data_set.index2label(cla)
+            if y == voted_pred:
+                acc += 1
+            if print_detail:
+                print('%s -> %s ' % (y, voted_pred))
+        acc_rate = float(acc) / float(data_loader.__len__())
+        return acc, acc_rate
 
 
-# --------------- train ----------------
 def setup_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -148,53 +99,34 @@ def run():
     LABELS_PATH = '../data/labels.txt'
     STOP_WORDS_PATH = '../data/stop_words.txt'
     PRE_TRAIN_PATH = '../data/glove.200d.small.txt'
+    ENSEMBLE_SIZE = 1  # the best 20
+    MODEL = 'bilstm'  # the best bilstm
     EMBEDDING_DIM = 200
-    HIDDEN_SIZE = 64
+    LSTM_HIDDEN = 100  # the best 100
+    FC_INPUT = 200  # the best 200
+    FC_HIDDEN = 64  # the best 64
+    EPOCHS = 20  # the best 30
+    LEARNING_RATE = 0.02  # the best 0.1
+    STEP_SIZE = 100  # the best 5
+    GAMMA = 1  # the best 0.5
+    FREEZE = False  # the best False
 
-    trainSet = QuestionSet(TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-    dataLoader = DataLoader(trainSet)
-    net = Net(trainSet.vocab_size(), EMBEDDING_DIM, HIDDEN_SIZE, trainSet.label_size(), model='bow',
-              pre_train_weight=trainSet.get_pre_train_weight(), freeze=True)
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(net.parameters(), lr=0.1)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
+    classifier = QuestionClassifier(ENSEMBLE_SIZE, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH,
+                                    PRE_TRAIN_PATH)
+    classifier.train(MODEL, EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, STEP_SIZE, GAMMA,
+                     FREEZE)
+    test_set = md.QuestionSet(DEV_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
+    acc, acc_rate = classifier.test(test_set)
+    print('acc: ' + str(acc))
+    print('acc_rate: ' + str(acc_rate))
 
-    for e in range(0, 30):
-        error = 0
-        for t, (cla, train) in enumerate(dataLoader):
-            optimizer.zero_grad()
-            cla_pred = net(train)
-            loss = criterion(cla_pred, cla)
-            error += loss.item()
-            loss.backward()
-            optimizer.step()
-        scheduler.step()
-        print('%d epoch finish, loss: %f' % (e + 1, error / dataLoader.__len__()))
-    torch.save(net, '../data/model.bin')
-
-    # --------------- train set test----------------
-    acc = 0
-    for t, (cla, test) in enumerate(dataLoader):
-        output = net(test)
-        _, pred = torch.max(output.data, 1)
-        if cla == pred:
-            acc += 1
-    print('train set acc: ' + str(acc))
-    acc_rate = float(acc) / float(dataLoader.__len__())
-    print('train set acc_rate: ' + str(acc_rate))
-
-    # --------------- dev set test----------------
-    devSet = QuestionSet(DEV_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-    devDataLoader = DataLoader(devSet)
-    acc = 0
-    for t, (cla, test) in enumerate(devDataLoader):
-        output = net(test)
-        _, pred = torch.max(output.data, 1)
-        print('y: %s, pred: %s ' % (devSet.index2label(cla), devSet.index2label(pred)))
-        if cla == pred:
-            acc += 1
-    print('dev set acc: ' + str(acc))
-    acc_rate = float(acc) / float(devDataLoader.__len__())
-    print('dev set acc_rate: ' + str(acc_rate))
 
 # run()
+# single
+# best accuracy = 0.741
+
+# ensemble
+# 25 30  accuracy = 0.787
+# 20 30  accuracy = 0.776
+# 15 30  accuracy = 0.774
+# 10 30  accuracy = 0.782
