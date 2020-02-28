@@ -14,14 +14,16 @@ LABELS_PATH = '../data/labels.txt'
 STOP_WORDS_PATH = '../data/stop_words.txt'
 PRE_TRAIN_PATH = '../data/glove.200d.small.txt'
 ENSEMBLE_SIZE = 20  # the best 20
-MODEL = 'bilstm'
-EMBEDDING_DIM = 200
-LSTM_HIDDEN = 100
-FC_INPUT = 200
-FC_HIDDEN = 64
+MODEL = 'hybrid-cat'  # the best hybrid-cat
+EMBEDDING_DIM = 200  # the best 200
+LSTM_HIDDEN = 100  # the best 100
+FC_INPUT = 200  # the best 200 / 400 for hybrid-cat / 784 for cnn
+FC_HIDDEN = 64  # the best 64
 EPOCHS = 30  # the best 30
-LEARNING_RATE = 0.02
-FREEZE = False
+LEARNING_RATE = 0.02  # the best 0.02
+FREEZE = False  # the best False
+IS_CNN = False
+PRINT_DETAIL = False
 
 
 def setup_seed(seed):
@@ -36,30 +38,37 @@ def ex1():
     begin_time = time.asctime(time.localtime(time.time()))
     print('------------ ex1 begin %s ------------' % begin_time)
 
-    epochs = [1, 2, 3]
+    test_set = md.QuestionSet(TEST_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
+    params = [([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['hybrid-add', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['cnn', EMBEDDING_DIM, LSTM_HIDDEN, 784, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [True, PRINT_DETAIL]),
+              ([20, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL])
+              ]
+
+    epochs = [1, 5, 10, 15, 20, 25, 30]
     for epoch in epochs:
-        bow = cf.QuestionClassifier(1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-        bow.train('bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, epoch, LEARNING_RATE, FREEZE)
+        print("number of epoch: %d" % epoch)
+        for param in params:
+            clf = cf.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
+            clf.train(param[1][0], param[1][1], param[1][2], param[1][3], param[1][4], epoch, param[1][6], param[1][7])
+            acc, acc_rate = clf.test(test_set, params[2][0], params[2][1])
+            print('model: %s, ensemble: %d, pre_train: %s, freeze: %s, acc: %d, acc rate: %f' %
+                  (param[1][0], param[0][0], param[0][5], param[1][7], acc, acc_rate))
 
-        bilstm = cf.QuestionClassifier(1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-        bilstm.train('bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, epoch, LEARNING_RATE, FREEZE)
-
-        en_bow = cf.QuestionClassifier(2, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-        en_bow.train('bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, epoch, LEARNING_RATE, FREEZE)
-
-        print('epoch number: %d' % epoch)
-        test_set = md.QuestionSet(TEST_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-        acc, acc_rate = bow.test(test_set)
-        print('bow acc: %s' % epoch, str(acc))
-        print('bow acc_rate: %s' % epoch, str(acc_rate))
-
-        acc, acc_rate = bilstm.test(test_set)
-        print('bilstm acc: %s' % epoch, str(acc))
-        print('bilstm acc_rate: %s' % epoch, str(acc_rate))
-
-        acc, acc_rate = en_bow.test(test_set)
-        print('en_bow acc: %s' % epoch, str(acc))
-        print('en_bow acc_rate: %s' % epoch, str(acc_rate))
     finish_time = time.asctime(time.localtime(time.time()))
     print('ex1 finish %s' % finish_time)
 
@@ -68,51 +77,37 @@ def ex2():
     begin_time = time.asctime(time.localtime(time.time()))
     print('------------ ex2 begin %s ------------' % begin_time)
 
-    epochs = [1, 2, 3]
+    test_set = md.QuestionSet(TEST_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
+    params = [([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, None],
+               ['bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, False],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, True],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, False],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, None],
+               ['bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, False],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, True],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, False],
+               [IS_CNN, PRINT_DETAIL])
+              ]
+
+    epochs = [1, 5, 10, 15, 20, 25, 30]
     for epoch in epochs:
-        bow_ran = cf.QuestionClassifier(1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, None)
-        bow_ran.train('bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, epoch, LEARNING_RATE, False)
+        print("number of epoch: %d" % epoch)
+        for param in params:
+            clf = cf.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
+            clf.train(param[1][0], param[1][1], param[1][2], param[1][3], param[1][4], epoch, param[1][6], param[1][7])
+            acc, acc_rate = clf.test(test_set, params[2][0], params[2][1])
+            print('model: %s, ensemble: %d, pre_train: %s, freeze: %s, acc: %d, acc rate: %f' %
+                  (param[1][0], param[0][0], param[0][5], param[1][7], acc, acc_rate))
 
-        bow_pre_fre = cf.QuestionClassifier(1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-        bow_pre_fre.train('bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, epoch, LEARNING_RATE, True)
-
-        bow_pre_fine = cf.QuestionClassifier(1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-        bow_pre_fine.train('bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, epoch, LEARNING_RATE, False)
-
-        bil_ran = cf.QuestionClassifier(1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, None)
-        bil_ran.train('bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, epoch, LEARNING_RATE, False)
-
-        bil_pre_fre = cf.QuestionClassifier(1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-        bil_pre_fre.train('bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, epoch, LEARNING_RATE, True)
-
-        bil_pre_fine = cf.QuestionClassifier(1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-        bil_pre_fine.train('bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, epoch, LEARNING_RATE, False)
-
-        print('epoch number: %d' % epoch)
-        test_set = md.QuestionSet(TEST_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-        acc, acc_rate = bow_ran.test(test_set)
-        print('bow_ran acc: %s' % str(acc))
-        print('bow_ran acc_rate: %s' % str(acc_rate))
-
-        acc, acc_rate = bow_pre_fre.test(test_set)
-        print('bow_pre_fre acc: %s' % str(acc))
-        print('bow_pre_fre acc_rate: %s' % str(acc_rate))
-
-        acc, acc_rate = bow_pre_fine.test(test_set)
-        print('bow_pre_fine acc: %s' % str(acc))
-        print('bow_pre_fine acc_rate: %s' % str(acc_rate))
-
-        acc, acc_rate = bil_ran.test(test_set)
-        print('bil_ran acc: %s' % str(acc))
-        print('bil_ran acc_rate: %s' % str(acc_rate))
-
-        acc, acc_rate = bil_pre_fre.test(test_set)
-        print('bil_pre_fre acc: %s' % str(acc))
-        print('bil_pre_fre acc_rate: %s' % str(acc_rate))
-
-        acc, acc_rate = bil_pre_fine.test(test_set)
-        print('bil_pre_fine acc: %s' % str(acc))
-        print('bil_pre_fine acc_rate: %s' % str(acc_rate))
     finish_time = time.asctime(time.localtime(time.time()))
     print('ex2 finish %s' % finish_time)
 
@@ -120,6 +115,64 @@ def ex2():
 def ex3():
     begin_time = time.asctime(time.localtime(time.time()))
     print('------------ ex3 begin %s ------------' % begin_time)
+
+    test_set = md.QuestionSet(TEST_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
+    params = [([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['bow', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['hybrid-add', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL]),
+              ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['cnn', EMBEDDING_DIM, LSTM_HIDDEN, 784, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [True, PRINT_DETAIL]),
+              ([20, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, PRINT_DETAIL])
+              ]
+
+    train_paths = ['../data/train.1000.txt', '../data/train.2000.txt', '../data/train.3000.txt',
+                   '../data/train.4000.txt', '../data/train.5000.txt', ]
+    for path in train_paths:
+        print("train set: %s" % path)
+        for param in params:
+            clf = cf.QuestionClassifier(param[0][0], path, param[0][2], param[0][3], param[0][4], param[0][5])
+            clf.train(param[1][0], param[1][1], param[1][2], param[1][3], param[1][4], param[1][5], param[1][6],
+                      param[1][7])
+            acc, acc_rate = clf.test(test_set, params[2][0], params[2][1])
+            print('model: %s, ensemble: %d, pre_train: %s, freeze: %s, acc: %d, acc rate: %f' %
+                  (param[1][0], param[0][0], param[0][5], param[1][7], acc, acc_rate))
+
+    finish_time = time.asctime(time.localtime(time.time()))
+    print('ex3 finish %s' % finish_time)
+
+
+def ex4():
+    begin_time = time.asctime(time.localtime(time.time()))
+    print('------------ ex4 begin %s ------------' % begin_time)
+
+    test_set = md.QuestionSet(TEST_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
+    params = [([20, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE],
+               [IS_CNN, True])
+              ]
+
+    for param in params:
+        clf = cf.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
+        clf.train(param[1][0], param[1][1], param[1][2], param[1][3], param[1][4], param[1][5], param[1][6],
+                  param[1][7])
+        acc, acc_rate = clf.test(test_set, params[2][0], params[2][1])
+        print('model: %s, ensemble: %d, pre_train: %s, freeze: %s, acc: %d, acc rate: %f' %
+              (param[1][0], param[0][0], param[0][5], param[1][7], acc, acc_rate))
+
+    finish_time = time.asctime(time.localtime(time.time()))
+    print('ex4 finish %s' % finish_time)
 
 
 print("experiments begin, output transfer to file......")
@@ -133,6 +186,8 @@ print('\n')
 ex2()
 print('\n')
 ex3()
+print('\n')
+ex4()
 
 sys.stdout = old
 f.close()

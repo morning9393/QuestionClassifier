@@ -47,7 +47,7 @@ class QuestionClassifier:
                          subset.label_size(), pre_train_weight=subset.get_pre_train_weight(), freeze=freeze)
             criterion = torch.nn.CrossEntropyLoss()
             optimizer = torch.optim.SGD(net.parameters(), lr=lr)
-            print('%d classifier begin' % (self.subsets.index(subset) + 1))
+            # print('%d classifier begin' % (self.subsets.index(subset) + 1))
             for e in range(0, epochs):
                 error = 0
                 for t, (cla, train) in enumerate(loader):
@@ -59,7 +59,7 @@ class QuestionClassifier:
                     error += loss.item()
                     loss.backward()
                     optimizer.step()
-                print('%d epoch finish, loss: %f' % (e + 1, error / loader.__len__()))
+                # print('%d epoch finish, loss: %f' % (e + 1, error / loader.__len__()))
             self.classifiers.append(net)
 
     def test(self, data_set, is_cnn=False, print_detail=False):
@@ -136,7 +136,7 @@ def run():
     print('acc_rate: ' + str(acc_rate))
 
 
-run()
+# run()
 # single
 # best accuracy = 0.746
 
