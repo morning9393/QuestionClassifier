@@ -6,7 +6,7 @@ import numpy as np
 from src import question_classifier as cf
 from src import model as md
 
-TRAIN_PATH = '../data/train.txt'
+TRAIN_PATH = '../data/train.5000.txt'
 DEV_PATH = '../data/dev.txt'
 TEST_PATH = '../data/test.txt'
 VOCABULARY_PATH = '../data/vocabulary.txt'

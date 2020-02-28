@@ -21,22 +21,6 @@ def load_glove():
         return glove_dict
 
 
-def split_data():
-    data = load_data()
-    indexes = np.random.randint(0, len(data), int(len(data) * 0.1))
-    dev = [data[i] for i in indexes]
-    train = [s for s in data if s not in dev]
-    return train, dev
-
-
-def write_train_dev():
-    train, dev = split_data()
-    with open('../data/train.txt', 'w') as train_file:
-        train_file.write('\n'.join(train))
-    with open('../data/dev.txt', 'w') as dev_file:
-        dev_file.write('\n'.join(dev))
-
-
 def generate_labels():
     label_set = set([])
     for data in load_data():
@@ -85,6 +69,5 @@ def write_vocabulary():
 
 
 np.random.seed(16)
-write_train_dev()
 write_labels()
 write_vocabulary()

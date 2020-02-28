@@ -51,8 +51,19 @@ class QuestionClassifier:
             for e in range(0, epochs):
                 error = 0
                 for t, (cla, train) in enumerate(loader):
+                    print(train)
+                    if model == 'cnn':
+                        length = 19
+                        print(len(train[0]))
+                        if len(train[0]) < length:
+                            temp1 = np.zeros(length - len(train[0]))
+                            temp2 = train.numpy()
+                            temp3 = np.append(temp2, temp1)
+                            train = torch.LongTensor([temp3])
+                    print(train)
                     optimizer.zero_grad()
                     cla_pred = net(train)
+                    print(cla_pred)
                     loss = criterion(cla_pred, cla)
                     error += loss.item()
                     loss.backward()
@@ -93,37 +104,34 @@ def setup_seed(seed):
 
 def run():
     setup_seed(16)
-    TRAIN_PATH = '../data/train.txt'
+    TRAIN_PATH = '../data/train.5000.txt'
     DEV_PATH = '../data/dev.txt'
     VOCABULARY_PATH = '../data/vocabulary.txt'
     LABELS_PATH = '../data/labels.txt'
     STOP_WORDS_PATH = '../data/stop_words.txt'
     PRE_TRAIN_PATH = '../data/glove.200d.small.txt'
     ENSEMBLE_SIZE = 1  # the best 20
-    MODEL = 'bilstm'  # the best bilstm
+    MODEL = 'cnn'  # the best hybrid-cat
     EMBEDDING_DIM = 200
     LSTM_HIDDEN = 100  # the best 100
-    FC_INPUT = 200  # the best 200
+    FC_INPUT = 98  # the best 200 / 400 for cat
     FC_HIDDEN = 64  # the best 64
     EPOCHS = 20  # the best 30
-    LEARNING_RATE = 0.02  # the best 0.1
-    STEP_SIZE = 100  # the best 5
-    GAMMA = 1  # the best 0.5
+    LEARNING_RATE = 0.02  # the best 0.02
     FREEZE = False  # the best False
 
     classifier = QuestionClassifier(ENSEMBLE_SIZE, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH,
                                     PRE_TRAIN_PATH)
-    classifier.train(MODEL, EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, STEP_SIZE, GAMMA,
-                     FREEZE)
+    classifier.train(MODEL, EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE)
     test_set = md.QuestionSet(DEV_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
     acc, acc_rate = classifier.test(test_set)
     print('acc: ' + str(acc))
     print('acc_rate: ' + str(acc_rate))
 
 
-# run()
+run()
 # single
-# best accuracy = 0.741
+# best accuracy = 0.746
 
 # ensemble
 # 25 30  accuracy = 0.787
