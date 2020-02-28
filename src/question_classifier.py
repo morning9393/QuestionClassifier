@@ -44,26 +44,17 @@ class QuestionClassifier:
         for subset in self.subsets:
             loader = DataLoader(subset)
             net = md.Net(model, subset.vocab_size(), embedding_dim, lstm_hidden, fc_input, fc_hidden,
-                            subset.label_size(), pre_train_weight=subset.get_pre_train_weight(), freeze=freeze)
+                         subset.label_size(), pre_train_weight=subset.get_pre_train_weight(), freeze=freeze)
             criterion = torch.nn.CrossEntropyLoss()
             optimizer = torch.optim.SGD(net.parameters(), lr=lr)
             print('%d classifier begin' % (self.subsets.index(subset) + 1))
             for e in range(0, epochs):
                 error = 0
                 for t, (cla, train) in enumerate(loader):
-                    print(train)
                     if model == 'cnn':
-                        length = 19
-                        print(len(train[0]))
-                        if len(train[0]) < length:
-                            temp1 = np.zeros(length - len(train[0]))
-                            temp2 = train.numpy()
-                            temp3 = np.append(temp2, temp1)
-                            train = torch.LongTensor([temp3])
-                    print(train)
+                        train = self.normalize(train)
                     optimizer.zero_grad()
                     cla_pred = net(train)
-                    print(cla_pred)
                     loss = criterion(cla_pred, cla)
                     error += loss.item()
                     loss.backward()
@@ -71,11 +62,13 @@ class QuestionClassifier:
                 print('%d epoch finish, loss: %f' % (e + 1, error / loader.__len__()))
             self.classifiers.append(net)
 
-    def test(self, data_set, print_detail=False):
+    def test(self, data_set, is_cnn=False, print_detail=False):
         data_loader = DataLoader(data_set)
         acc = 0
         for t, (cla, test) in enumerate(data_loader):
             vote = {}
+            if is_cnn:
+                test = self.normalize(test)
             for net in self.classifiers:
                 output = net(test)
                 _, pred = torch.max(output.data, 1)
@@ -93,6 +86,19 @@ class QuestionClassifier:
         acc_rate = float(acc) / float(data_loader.__len__())
         return acc, acc_rate
 
+    @staticmethod
+    def normalize(sample):
+        length = 21
+        if len(sample[0]) < length:
+            temp1 = np.zeros(length - len(sample[0]))
+            temp2 = sample.numpy()
+            temp3 = np.append(temp2, temp1)
+            result = torch.LongTensor([temp3])
+            return result
+        else:
+            result = sample[:, 0:length]
+            return result
+
 
 def setup_seed(seed):
     torch.manual_seed(seed)
@@ -106,6 +112,7 @@ def run():
     setup_seed(16)
     TRAIN_PATH = '../data/train.5000.txt'
     DEV_PATH = '../data/dev.txt'
+    TEST_PATH = '../data/test.txt'
     VOCABULARY_PATH = '../data/vocabulary.txt'
     LABELS_PATH = '../data/labels.txt'
     STOP_WORDS_PATH = '../data/stop_words.txt'
@@ -114,7 +121,7 @@ def run():
     MODEL = 'cnn'  # the best hybrid-cat
     EMBEDDING_DIM = 200
     LSTM_HIDDEN = 100  # the best 100
-    FC_INPUT = 98  # the best 200 / 400 for cat
+    FC_INPUT = 784  # the best 200 / 400 for cat / 784 for cnn
     FC_HIDDEN = 64  # the best 64
     EPOCHS = 20  # the best 30
     LEARNING_RATE = 0.02  # the best 0.02
@@ -124,7 +131,7 @@ def run():
                                     PRE_TRAIN_PATH)
     classifier.train(MODEL, EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE)
     test_set = md.QuestionSet(DEV_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-    acc, acc_rate = classifier.test(test_set)
+    acc, acc_rate = classifier.test(test_set, is_cnn=True)
     print('acc: ' + str(acc))
     print('acc_rate: ' + str(acc_rate))
 

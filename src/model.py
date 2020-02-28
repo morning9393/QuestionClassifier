@@ -106,8 +106,6 @@ class Net(torch.nn.Module):
     def __init__(self, model, vocab_size, embedding_dim, lstm_hidden, fc_input, fc_hidden, label_size,
                  pre_train_weight=None, freeze=True):
         super(Net, self).__init__()
-        fc_conv = 5
-        fc_poolSize = 2
         self.model = model
         self.lstm_hidden = lstm_hidden
         if pre_train_weight is None:
@@ -116,8 +114,8 @@ class Net(torch.nn.Module):
         else:
             self.embedding = torch.nn.Embedding.from_pretrained(pre_train_weight, freeze=freeze)
             self.embeddingBag = torch.nn.EmbeddingBag.from_pretrained(pre_train_weight, freeze=freeze)
-        self.conv1 = torch.nn.Conv2d(1, 1, fc_conv)
-        self.pool = torch.nn.MaxPool2d(2, fc_poolSize)
+        self.conv1 = torch.nn.Conv2d(1, 1, 5)
+        self.pool = torch.nn.MaxPool2d(2, 2)
         self.bilstm = torch.nn.LSTM(embedding_dim, self.lstm_hidden, bidirectional=True)
         self.fc1 = torch.nn.Linear(fc_input, fc_hidden)
         self.fc2 = torch.nn.Linear(fc_hidden, label_size)
@@ -151,6 +149,7 @@ class Net(torch.nn.Module):
             out = self.conv1(out)
             out = torch.nn.functional.relu(out)
             out = self.pool(out)
+            out = out.view(1, -1)
         else:  # default: bag of word
             out = self.embeddingBag(x)
         out = self.fc1(out)
