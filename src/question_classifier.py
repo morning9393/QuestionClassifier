@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 import random
 import numpy as np
-from src import model as md
+import model as md
 
 
 class QuestionClassifier:

@@ -3,8 +3,8 @@ import torch
 import random
 import time
 import numpy as np
-from src import question_classifier as cf
-from src import model as md
+import question_classifier as cf
+import model as md
 
 TRAIN_PATH = '../data/train.5000.txt'
 DEV_PATH = '../data/dev.txt'
