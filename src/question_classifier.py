@@ -8,9 +8,11 @@ from src import model as md
 class QuestionClassifier:
 
     def __init__(self, ensemble_size, data_path, vocabulary_path, labels_path, stop_words_path, pre_train_path=None):
+        self.model = None
         self.dataset = []
         self.subsets = []
         self.classifiers = []
+        self.data_path = data_path
         self.vocabulary_path = vocabulary_path
         self.labels_path = labels_path
         self.stop_words_path = stop_words_path
@@ -40,36 +42,52 @@ class QuestionClassifier:
         random_idx = np.random.choice(range(0, len(self.dataset)), len(self.dataset), replace=True)
         return [self.dataset[i] for i in random_idx]
 
-    def train(self, model, embedding_dim, lstm_hidden, fc_input, fc_hidden, epochs, lr, freeze=True):
-        for subset in self.subsets:
-            loader = DataLoader(subset)
-            net = md.Net(model, subset.vocab_size(), embedding_dim, lstm_hidden, fc_input, fc_hidden,
-                         subset.label_size(), pre_train_weight=subset.get_pre_train_weight(), freeze=freeze)
-            criterion = torch.nn.CrossEntropyLoss()
-            optimizer = torch.optim.SGD(net.parameters(), lr=lr)
-            # print('%d classifier begin' % (self.subsets.index(subset) + 1))
-            for e in range(0, epochs):
-                error = 0
-                for t, (cla, train) in enumerate(loader):
-                    if model == 'cnn':
-                        train = self.normalize(train)
-                    optimizer.zero_grad()
-                    cla_pred = net(train)
-                    loss = criterion(cla_pred, cla)
-                    error += loss.item()
-                    loss.backward()
-                    optimizer.step()
-                # print('%d epoch finish, loss: %f' % (e + 1, error / loader.__len__()))
+    def train(self, model, embedding_dim, lstm_hidden, fc_input, fc_hidden, epochs, lr, freeze=True, test_path=None):
+        self.model = model
+        test_set = None
+        loaders = []
+        criterion = []
+        optimizers = []
+        if test_path is not None:
+            test_set = md.QuestionSet(test_path, self.vocabulary_path, self.labels_path, self.stop_words_path,
+                                      self.pre_train_path)
+        for i in range(0, len(self.subsets)):
+            loaders.append(DataLoader(self.subsets[i]))
+            net = md.Net(model, self.subsets[i].vocab_size(), embedding_dim, lstm_hidden, fc_input, fc_hidden,
+                         self.subsets[i].label_size(), pre_train_weight=self.subsets[i].get_pre_train_weight(),
+                         freeze=freeze)
             self.classifiers.append(net)
+            criterion.append(torch.nn.CrossEntropyLoss())
+            optimizers.append(torch.optim.SGD(net.parameters(), lr=lr))
 
-    def test(self, data_set, is_cnn=False, print_detail=False):
+        for e in range(0, epochs):
+            for i in range(0, len(self.subsets)):
+                for t, (cla, train) in enumerate(loaders[i]):
+                    if self.model == 'cnn':
+                        train = self.normalize(train)
+                    self.classifiers[i].train()
+                    optimizers[i].zero_grad()
+                    cla_pred = self.classifiers[i](train)
+                    loss = criterion[i](cla_pred, cla)
+                    loss.backward()
+                    optimizers[i].step()
+            if test_set is not None:
+                acc, acc_rate = self.test(test_set)
+                print(
+                    'ensemble: %d, model: %s, epoch: %d, pre_train_embedding: %s, freeze: %s, train_set: %s, '
+                    'test_set: %s, acc: %d, acc rate: %f' %
+                    (len(self.subsets), self.model, e + 1, self.pre_train_path, freeze, self.data_path, test_path, acc,
+                     acc_rate))
+
+    def test(self, data_set, print_detail=False):
         data_loader = DataLoader(data_set)
         acc = 0
         for t, (cla, test) in enumerate(data_loader):
             vote = {}
-            if is_cnn:
+            if self.model == 'cnn':
                 test = self.normalize(test)
             for net in self.classifiers:
+                net.eval()
                 output = net(test)
                 _, pred = torch.max(output.data, 1)
                 pred = data_set.index2label(pred)
@@ -124,16 +142,12 @@ def run():
     FC_INPUT = 784  # the best 200 / 400 for cat / 784 for cnn
     FC_HIDDEN = 64  # the best 64
     EPOCHS = 20  # the best 30
-    LEARNING_RATE = 0.02  # the best 0.02
+    LEARNING_RATE = 0.01  # the best 0.01
     FREEZE = False  # the best False
 
     classifier = QuestionClassifier(ENSEMBLE_SIZE, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH,
                                     PRE_TRAIN_PATH)
-    classifier.train(MODEL, EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE)
-    test_set = md.QuestionSet(DEV_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
-    acc, acc_rate = classifier.test(test_set, is_cnn=True)
-    print('acc: ' + str(acc))
-    print('acc_rate: ' + str(acc_rate))
+    classifier.train(MODEL, EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH)
 
 
 # run()
