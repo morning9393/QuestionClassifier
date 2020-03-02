@@ -12,6 +12,7 @@ class QuestionClassifier:
         self.dataset = []
         self.subsets = []
         self.classifiers = []
+        self.ensemble_size = ensemble_size
         self.data_path = data_path
         self.vocabulary_path = vocabulary_path
         self.labels_path = labels_path
@@ -100,9 +101,28 @@ class QuestionClassifier:
             if y == voted_pred:
                 acc += 1
             if print_detail:
-                print('%s -> %s ' % (y, voted_pred))
+                question = data_set.index2question(t)
+                print('%s %s -> %s ' % (y, question, voted_pred))
         acc_rate = float(acc) / float(data_loader.__len__())
         return acc, acc_rate
+
+    def load(self, path):
+        if self.ensemble_size < 2:
+            net = torch.load(path)
+            self.classifiers.append(net)
+        else:
+            for i in range(0, self.ensemble_size):
+                i_path = path + '.' + str(i)
+                net = torch.load(i_path)
+                self.classifiers.append(net)
+
+    def save(self, path):
+        if len(self.classifiers) == 1:
+            torch.save(self.classifiers[0], path)
+        if len(self.classifiers) > 1:
+            for i in range(0, len(self.classifiers)):
+                i_path = path + '.' + str(i)
+                torch.save(self.classifiers[i], i_path)
 
     @staticmethod
     def normalize(sample):

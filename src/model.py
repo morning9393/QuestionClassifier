@@ -35,6 +35,7 @@ class QuestionSet(Dataset):
         with open(path, 'r') as dataset_file:
             for line in dataset_file:
                 label, question = line.split(' ', 1)
+                question = question.strip()
                 self.dataset.append((label, question))
 
     def load_labels(self, path):
@@ -87,6 +88,9 @@ class QuestionSet(Dataset):
             else:
                 indexes.append(self.vocabulary.index('#unk#'))
         return indexes
+
+    def index2question(self, index):
+        return self.dataset[index][1]
 
     def label2index(self, label):
         return self.labels.index(label)

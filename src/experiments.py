@@ -13,13 +13,13 @@ VOCABULARY_PATH = '../data/vocabulary.txt'
 LABELS_PATH = '../data/labels.txt'
 STOP_WORDS_PATH = '../data/stop_words.txt'
 PRE_TRAIN_PATH = '../data/glove.200d.small.txt'
-ENSEMBLE_SIZE = 20  # the best 20
+ENSEMBLE_SIZE = 1  # the best 20
 MODEL = 'hybrid-cat'  # the best hybrid-cat
 EMBEDDING_DIM = 200  # the best 200
 LSTM_HIDDEN = 100  # the best 100
 FC_INPUT = 200  # the best 200 / 400 for hybrid-cat / 784 for cnn
 FC_HIDDEN = 64  # the best 64
-EPOCHS = 30  # the best 30
+EPOCHS = 1  # the best 30
 LEARNING_RATE = 0.01  # the best 0.01
 FREEZE = False  # the best False
 
@@ -118,7 +118,7 @@ def ex4():
     print('************ ex4 begin %s ************' % begin_time)
     test_set = md.QuestionSet(TEST_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
     params = [([ENSEMBLE_SIZE, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
-               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, None])
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH])
               ]
     for param in params:
         clf = cf.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
