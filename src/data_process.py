@@ -11,16 +11,6 @@ def load_stop_words():
         return stop_words_file.read().split()
 
 
-def load_glove():
-    with open('../data/glove.200d.small.txt', 'r') as glove_file:
-        glove_dict = {}
-        for line in glove_file:
-            glove_word = line.split()
-            key = glove_word.pop(0)
-            glove_dict[key] = glove_word
-        return glove_dict
-
-
 def generate_labels():
     label_set = set([])
     for data in load_data():

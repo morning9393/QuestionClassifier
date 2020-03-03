@@ -3,7 +3,7 @@ import torch
 import random
 import time
 import numpy as np
-import question_classifier as cf
+import ensemble as en
 import model as md
 
 TRAIN_PATH = '../data/train.5000.txt'
@@ -50,7 +50,7 @@ def ex1():
                ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH])
               ]
     for param in params:
-        clf = cf.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
+        clf = en.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
         clf.train(param[1][0], param[1][1], param[1][2], param[1][3], param[1][4], param[1][5], param[1][6],
                   param[1][7], param[1][8])
         print('---------------------------------------------------------------------------------')
@@ -75,7 +75,7 @@ def ex2():
                ['bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, False, TEST_PATH])
               ]
     for param in params:
-        clf = cf.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
+        clf = en.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
         clf.train(param[1][0], param[1][1], param[1][2], param[1][3], param[1][4], param[1][5], param[1][6],
                   param[1][7], param[1][8])
         print('---------------------------------------------------------------------------------')
@@ -104,7 +104,7 @@ def ex3():
                    '../data/train.4000.txt', '../data/train.5000.txt']
     for param in params:
         for path in train_paths:
-            clf = cf.QuestionClassifier(param[0][0], path, param[0][2], param[0][3], param[0][4], param[0][5])
+            clf = en.QuestionClassifier(param[0][0], path, param[0][2], param[0][3], param[0][4], param[0][5])
             clf.train(param[1][0], param[1][1], param[1][2], param[1][3], param[1][4], param[1][5], param[1][6],
                       param[1][7], param[1][8])
             print('---------------------------------------------------------------------------------')
@@ -121,7 +121,7 @@ def ex4():
                ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH])
               ]
     for param in params:
-        clf = cf.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
+        clf = en.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
         clf.train(param[1][0], param[1][1], param[1][2], param[1][3], param[1][4], param[1][5], param[1][6],
                   param[1][7], param[1][8])
         acc, acc_rate = clf.test(test_set, print_detail=True)
@@ -132,9 +132,9 @@ def ex4():
     print('************ ex4 finish %s ************' % finish_time)
 
 
-print("experiments begin, output transfer to file......")
+print("experiments begin, output transfer to file [../data/experiments_output.txt]......")
 setup_seed(16)
-f = open('../data/output.txt', 'w')
+f = open('../data/experiments_output.txt', 'w')
 old = sys.stdout
 sys.stdout = f
 
