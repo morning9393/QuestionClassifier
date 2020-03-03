@@ -13,13 +13,13 @@ VOCABULARY_PATH = '../data/vocabulary.txt'
 LABELS_PATH = '../data/labels.txt'
 STOP_WORDS_PATH = '../data/stop_words.txt'
 PRE_TRAIN_PATH = '../data/glove.small.txt'
-ENSEMBLE_SIZE = 3
+ENSEMBLE_SIZE = 20
 MODEL = 'hybrid-cat'
 EMBEDDING_DIM = 300
 LSTM_HIDDEN = 150
 FC_INPUT = 300  # 300 for others / 600 for hybrid-cat / 1184 for cnn
 FC_HIDDEN = 64
-EPOCHS = 2
+EPOCHS = 30
 LEARNING_RATE = 0.01
 FREEZE = False
 
