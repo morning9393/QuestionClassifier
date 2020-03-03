@@ -51,8 +51,8 @@ class QuestionSet(Dataset):
                     if int(pair[1]) > 2:  # k = 3
                         self.vocabulary.append(pair[0])
             else:
-                self.load_pre_train(self.pre_train_path)
-                self.pre_weight.append(np.random.rand(200))
+                pre_train_dim = self.load_pre_train(self.pre_train_path)
+                self.pre_weight.append(np.random.rand(pre_train_dim))
                 for line in vocabulary_file:
                     pair = line.split()
                     if int(pair[1]) > 2 and pair[0] in self.pre_train_words.keys():  # k = 3
@@ -61,11 +61,14 @@ class QuestionSet(Dataset):
 
     def load_pre_train(self, path):
         with open(path, 'r') as pre_train_file:
+            pre_train_dim = 0
             for line in pre_train_file:
-                pair = line.split(' ')
+                pair = line.split()
                 key = pair[0]
                 value = [float(x) for x in pair[1:]]
+                pre_train_dim = len(value)
                 self.pre_train_words[key] = value
+            return pre_train_dim
 
     def load_stop_words(self, path):
         with open(path, 'r') as stop_words_file:
@@ -149,7 +152,7 @@ class Net(torch.nn.Module):
             out = out_bag + out_bilstm
         elif self.model == "cnn":
             embeds = self.embedding(x)
-            out = embeds.view(1, 1, len(embeds[0]), 200)
+            out = embeds.view(1, 1, len(embeds[0]), -1)
             out = self.conv1(out)
             out = torch.nn.functional.relu(out)
             out = self.pool(out)

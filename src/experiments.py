@@ -12,16 +12,16 @@ TEST_PATH = '../data/test.txt'
 VOCABULARY_PATH = '../data/vocabulary.txt'
 LABELS_PATH = '../data/labels.txt'
 STOP_WORDS_PATH = '../data/stop_words.txt'
-PRE_TRAIN_PATH = '../data/glove.200d.small.txt'
-ENSEMBLE_SIZE = 1  # the best 20
-MODEL = 'hybrid-cat'  # the best hybrid-cat
-EMBEDDING_DIM = 200  # the best 200
-LSTM_HIDDEN = 100  # the best 100
-FC_INPUT = 200  # the best 200 / 400 for hybrid-cat / 784 for cnn
-FC_HIDDEN = 64  # the best 64
-EPOCHS = 1  # the best 30
-LEARNING_RATE = 0.01  # the best 0.01
-FREEZE = False  # the best False
+PRE_TRAIN_PATH = '../data/glove.small.txt'
+ENSEMBLE_SIZE = 3
+MODEL = 'hybrid-cat'
+EMBEDDING_DIM = 300
+LSTM_HIDDEN = 150
+FC_INPUT = 300  # 300 for others / 600 for hybrid-cat / 1184 for cnn
+FC_HIDDEN = 64
+EPOCHS = 2
+LEARNING_RATE = 0.01
+FREEZE = False
 
 
 def setup_seed(seed):
@@ -40,14 +40,14 @@ def ex1():
               ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
                ['bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
               ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
-               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 600, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
               ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
                ['hybrid-add', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE,
                 TEST_PATH]),
               ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
-               ['cnn', EMBEDDING_DIM, LSTM_HIDDEN, 784, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
+               ['cnn', EMBEDDING_DIM, LSTM_HIDDEN, 1184, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
               ([ENSEMBLE_SIZE, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
-               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH])
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 600, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH])
               ]
     for param in params:
         clf = en.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])
@@ -91,14 +91,14 @@ def ex3():
               ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
                ['bilstm', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
               ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
-               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 600, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
               ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
                ['hybrid-add', EMBEDDING_DIM, LSTM_HIDDEN, FC_INPUT, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE,
                 TEST_PATH]),
               ([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
-               ['cnn', EMBEDDING_DIM, LSTM_HIDDEN, 784, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
+               ['cnn', EMBEDDING_DIM, LSTM_HIDDEN, 1184, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH]),
               ([ENSEMBLE_SIZE, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
-               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH])
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 600, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH])
               ]
     train_paths = ['../data/train.1000.txt', '../data/train.2000.txt', '../data/train.3000.txt',
                    '../data/train.4000.txt', '../data/train.5000.txt']
@@ -118,7 +118,7 @@ def ex4():
     print('************ ex4 begin %s ************' % begin_time)
     test_set = md.QuestionSet(TEST_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
     params = [([ENSEMBLE_SIZE, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
-               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 400, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH])
+               ['hybrid-cat', EMBEDDING_DIM, LSTM_HIDDEN, 600, FC_HIDDEN, EPOCHS, LEARNING_RATE, FREEZE, TEST_PATH])
               ]
     for param in params:
         clf = en.QuestionClassifier(param[0][0], param[0][1], param[0][2], param[0][3], param[0][4], param[0][5])

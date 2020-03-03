@@ -79,12 +79,12 @@ class QuestionClassifier:
                     (len(self.subsets), self.model, e + 1, self.pre_train_path, freeze, self.data_path, test_path, acc,
                      acc_rate))
 
-    def test(self, data_set, print_detail=False):
+    def test(self, data_set, is_cnn=False, print_detail=False):
         data_loader = DataLoader(data_set)
         acc = 0
         for t, (cla, test) in enumerate(data_loader):
             vote = {}
-            if self.model == 'cnn':
+            if self.model == 'cnn' or is_cnn:
                 test = self.normalize(test)
             for net in self.classifiers:
                 net.eval()
