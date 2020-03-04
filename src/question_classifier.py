@@ -7,6 +7,11 @@ import model as md
 
 
 def main(argv):
+    """
+    Main function, check the input command parameters and choose corresponding handle method.
+
+    :param argv: Command line input parameters.
+    """
     if len(argv) < 4:
         print('question_classifier.py [train|test] -config [configuration_file_path]')
         sys.exit(2)
@@ -25,6 +30,12 @@ def main(argv):
 
 
 def load_config(path):
+    """
+    Load config file and transfer to a dictionary.
+
+    :param path: Config file path.
+    :return: A dictionary with all configuration values.
+    """
     with open(path, 'r') as config_file:
         config = {}
         for line in config_file:
@@ -42,6 +53,11 @@ def load_config(path):
 
 
 def train(config):
+    """
+    Train and save model according to config parameters.
+
+    :param config: A dictionary with all configuration.
+    """
     classifier = en.QuestionClassifier(config['ensemble_size'], config['train_path'], config['vocabulary_path'],
                                        config['labels_path'], config['stop_words_path'], config['pre_train_path'])
     classifier.train(config['model'], config['embedding_dim'], config['lstm_hidden'], config['fc_input'],
@@ -51,6 +67,11 @@ def train(config):
 
 
 def test(config):
+    """
+    Test and save the result according to config parameters.
+
+    :param config: A dictionary with all configuration.
+    """
     classifier = en.QuestionClassifier(config['ensemble_size'], config['train_path'], config['vocabulary_path'],
                                        config['labels_path'], config['stop_words_path'], config['pre_train_path'])
     classifier.load(config['model_path'])
@@ -68,6 +89,11 @@ def test(config):
 
 
 def setup_seed(seed):
+    """
+    Fix random process.
+
+    :param seed: Seed of random value.
+    """
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     np.random.seed(seed)

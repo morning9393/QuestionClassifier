@@ -5,8 +5,19 @@ import model as md
 
 
 class QuestionClassifier:
+    """Ensemble of based model, if ensemble size is 1, means a single model and will not apply ensemble strategy."""
 
     def __init__(self, ensemble_size, data_path, vocabulary_path, labels_path, stop_words_path, pre_train_path=None):
+        """
+        Initialising, load data and bootstrapping to generate subset.
+
+        :param ensemble_size: How many model in this ensemble. If 1, bootstrapping will not be applied.
+        :param data_path: Data file path.
+        :param vocabulary_path: Vocabulary file path.
+        :param labels_path: Label file path.
+        :param stop_words_path: Stop word file path.
+        :param pre_train_path: Pre-trained embedding file path.
+        """
         self.model = None
         self.dataset = []
         self.subsets = []
@@ -21,12 +32,22 @@ class QuestionClassifier:
         self.init_subsets(ensemble_size)
 
     def load_dataset(self, path):
+        """
+        Load dataset from file, transfer to a list and assign to self.dataset.
+
+        :param path: Data file path.
+        """
         with open(path, 'r') as dataset_file:
             for line in dataset_file:
                 label, question = line.split(' ', 1)
                 self.dataset.append((label, question))
 
     def init_subsets(self, ensemble_size):
+        """
+        Use bootstrapping to generate a set of sub dataset, which used to build different models.
+
+        :param ensemble_size: How many model in the committee. If 1, bootstrapping will not be applied.
+        """
         if ensemble_size < 2:
             sub_dataset = md.QuestionSet(self.dataset, self.vocabulary_path, self.labels_path,
                                          self.stop_words_path, self.pre_train_path)
@@ -39,10 +60,29 @@ class QuestionClassifier:
                 self.subsets.append(sub_dataset)
 
     def bootstrapping(self):
+        """
+        Generate a subset with randomly selecting N sample in dataset with replace.
+        N is the size of dataset.
+
+        :return: a subset with the same size of original dataset.
+        """
         random_idx = np.random.choice(range(0, len(self.dataset)), len(self.dataset), replace=True)
         return [self.dataset[i] for i in random_idx]
 
     def train(self, model, embedding_dim, lstm_hidden, fc_input, fc_hidden, epochs, lr, freeze=True, test_path=None):
+        """
+        Train all the models in committee.
+
+        :param model: Type of model, must be one of [bilstm/hybrid-cat/hybrid-add/cnn/bow].
+        :param embedding_dim: Length of reserved vocabulary, used to build embedding layer.
+        :param lstm_hidden: Dimension of lstm hidden state, used to build bilstm model.
+        :param fc_input: Dimension of input full connect layer.
+        :param fc_hidden: Dimension of hidden full connect layer.
+        :param epochs: How many epochs it trains.
+        :param lr: Learning rate.
+        :param freeze: Freezing embedding layer or not. if True, weight in embedding layer will not be changed during training.
+        :param test_path: Test file path, use to validate the model after every epoch.
+        """
         self.model = model
         test_set = None
         loaders = []
@@ -80,6 +120,14 @@ class QuestionClassifier:
                      acc_rate))
 
     def test(self, data_set, is_cnn=False, print_detail=False):
+        """
+        Validate this model with corresponding test set.
+
+        :param data_set: Test set, QuestionSet type.
+        :param is_cnn: Is this model based on cnn or not.
+        :param print_detail: Print every sample and its result in the test set or not.
+        :return: A tuple with hit number and accuracy rate.
+        """
         data_loader = DataLoader(data_set)
         acc = 0
         for t, (cla, test) in enumerate(data_loader):
@@ -106,6 +154,11 @@ class QuestionClassifier:
         return acc, acc_rate
 
     def load(self, path):
+        """
+        Load models form path to build this ensemble.
+
+        :param path: Model or sub-models path.
+        """
         if self.ensemble_size < 2:
             net = torch.load(path)
             self.classifiers.append(net)
@@ -116,6 +169,12 @@ class QuestionClassifier:
                 self.classifiers.append(net)
 
     def save(self, path):
+        """
+        Save every model in ensemble to path.
+
+        :param path: Path to save.
+        :return:
+        """
         if len(self.classifiers) == 1:
             torch.save(self.classifiers[0], path)
         if len(self.classifiers) > 1:
@@ -125,6 +184,13 @@ class QuestionClassifier:
 
     @staticmethod
     def normalize(sample):
+        """
+        Normalize a list(question) of indexes to a unified length 21.
+        Used when model is cnn.
+
+        :param sample: A list(question) of indexes.
+        :return: Unified list with length 21.
+        """
         length = 21
         if len(sample[0]) < length:
             temp1 = np.zeros(length - len(sample[0]))

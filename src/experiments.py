@@ -25,6 +25,11 @@ FREEZE = False
 
 
 def setup_seed(seed):
+    """
+    Fix random process.
+
+    :param seed: Seed of random value.
+    """
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     np.random.seed(seed)
@@ -33,6 +38,9 @@ def setup_seed(seed):
 
 
 def ex1():
+    """
+    First experiment, compare performance of different models with same parameters and epochs.
+    """
     begin_time = time.asctime(time.localtime(time.time()))
     print('************ ex1 begin %s ************' % begin_time)
     params = [([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
@@ -59,6 +67,10 @@ def ex1():
 
 
 def ex2():
+    """
+    Second experiment, compare the influence of different initial parameters based on bow and bilstm,
+    including [random initialized/pre-trained&freeze/pre-trained&fine-tune].
+    """
     begin_time = time.asctime(time.localtime(time.time()))
     print('************ ex2 begin %s ************' % begin_time)
     params = [([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, None],
@@ -84,6 +96,9 @@ def ex2():
 
 
 def ex3():
+    """
+    Third experiment, compare performance of each model under train set with different size.
+    """
     begin_time = time.asctime(time.localtime(time.time()))
     print('************ ex3 begin %s ************' % begin_time)
     params = [([1, TRAIN_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH],
@@ -114,6 +129,9 @@ def ex3():
 
 
 def ex4():
+    """
+    Choose the most accurate model, check the classifying result for every test sample.
+    """
     begin_time = time.asctime(time.localtime(time.time()))
     print('************ ex4 begin %s ************' % begin_time)
     test_set = md.QuestionSet(TEST_PATH, VOCABULARY_PATH, LABELS_PATH, STOP_WORDS_PATH, PRE_TRAIN_PATH)
