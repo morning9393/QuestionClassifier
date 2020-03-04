@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>data_process module &mdash; Question Classifier 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ensemble module" href="ensemble.html" />
+    <link rel="prev" title="src" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Question Classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">data_process module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble.html">ensemble module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experiments.html">experiments module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html">model module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="question_classifier.html">question_classifier module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Question Classifier</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">src</a> &raquo;</li>
+        
+      <li>data_process module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/data_process.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-data_process">
+<span id="data-process-module"></span><h1>data_process module<a class="headerlink" href="#module-data_process" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="data_process.generate_corpus">
+<code class="sig-prename descclassname">data_process.</code><code class="sig-name descname">generate_corpus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_process.generate_corpus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate corpus from dataset, remove label from every question.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list with questions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="data_process.generate_labels">
+<code class="sig-prename descclassname">data_process.</code><code class="sig-name descname">generate_labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_process.generate_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a label list according to the first word in each line of dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list with labels.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="data_process.generate_vocabulary">
+<code class="sig-prename descclassname">data_process.</code><code class="sig-name descname">generate_vocabulary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_process.generate_vocabulary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate vocabulary from dataset and count their frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary with words in dataset and its frequency except stop word.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="data_process.load_data">
+<code class="sig-prename descclassname">data_process.</code><code class="sig-name descname">load_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_process.load_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load dataset from file ‘../data/dataset.txt’ and transfer to a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list whose each element corresponds to a line in the file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="data_process.load_stop_words">
+<code class="sig-prename descclassname">data_process.</code><code class="sig-name descname">load_stop_words</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_process.load_stop_words" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load stop words from file ‘../data/stop_words.txt’ and transfer to a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list with stop words.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="data_process.write_labels">
+<code class="sig-prename descclassname">data_process.</code><code class="sig-name descname">write_labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_process.write_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write labels to file ‘../data/labels.txt’, each line is a label</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="data_process.write_vocabulary">
+<code class="sig-prename descclassname">data_process.</code><code class="sig-name descname">write_vocabulary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_process.write_vocabulary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write vocabulary to ‘../data/vocabulary.txt’, each line contains a word and its frequency.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ensemble.html" class="btn btn-neutral float-right" title="ensemble module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral float-left" title="src" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Muning Wen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

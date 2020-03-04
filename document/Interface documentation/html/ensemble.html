@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ensemble module &mdash; Question Classifier 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="experiments module" href="experiments.html" />
+    <link rel="prev" title="data_process module" href="data_process.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Question Classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data_process.html">data_process module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ensemble module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experiments.html">experiments module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html">model module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="question_classifier.html">question_classifier module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Question Classifier</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">src</a> &raquo;</li>
+        
+      <li>ensemble module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/ensemble.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-ensemble">
+<span id="ensemble-module"></span><h1>ensemble module<a class="headerlink" href="#module-ensemble" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="ensemble.QuestionClassifier">
+<em class="property">class </em><code class="sig-prename descclassname">ensemble.</code><code class="sig-name descname">QuestionClassifier</code><span class="sig-paren">(</span><em class="sig-param">ensemble_size</em>, <em class="sig-param">data_path</em>, <em class="sig-param">vocabulary_path</em>, <em class="sig-param">labels_path</em>, <em class="sig-param">stop_words_path</em>, <em class="sig-param">pre_train_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Ensemble of based model, if ensemble size is 1, means a single model and will not apply ensemble strategy.</p>
+<dl class="method">
+<dt id="ensemble.QuestionClassifier.bootstrapping">
+<code class="sig-name descname">bootstrapping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier.bootstrapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a subset with randomly selecting N sample in dataset with replace.
+N is the size of dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a subset with the same size of original dataset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ensemble.QuestionClassifier.init_subsets">
+<code class="sig-name descname">init_subsets</code><span class="sig-paren">(</span><em class="sig-param">ensemble_size</em><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier.init_subsets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use bootstrapping to generate a set of sub dataset, which used to build different models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ensemble_size</strong> – How many model in the committee. If 1, bootstrapping will not be applied.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ensemble.QuestionClassifier.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load models form path to build this ensemble.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – Model or sub-models path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ensemble.QuestionClassifier.load_dataset">
+<code class="sig-name descname">load_dataset</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier.load_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load dataset from file, transfer to a list and assign to self.dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – Data file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ensemble.QuestionClassifier.normalize">
+<em class="property">static </em><code class="sig-name descname">normalize</code><span class="sig-paren">(</span><em class="sig-param">sample</em><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize a list(question) of indexes to a unified length 21.
+Used when model is cnn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sample</strong> – A list(question) of indexes.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Unified list with length 21.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ensemble.QuestionClassifier.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save every model in ensemble to path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – Path to save.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ensemble.QuestionClassifier.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">data_set</em>, <em class="sig-param">is_cnn=False</em>, <em class="sig-param">print_detail=False</em><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate this model with corresponding test set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_set</strong> – Test set, QuestionSet type.</p></li>
+<li><p><strong>is_cnn</strong> – Is this model based on cnn or not.</p></li>
+<li><p><strong>print_detail</strong> – Print every sample and its result in the test set or not.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple with hit number and accuracy rate.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ensemble.QuestionClassifier.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">embedding_dim</em>, <em class="sig-param">lstm_hidden</em>, <em class="sig-param">fc_input</em>, <em class="sig-param">fc_hidden</em>, <em class="sig-param">epochs</em>, <em class="sig-param">lr</em>, <em class="sig-param">freeze=True</em>, <em class="sig-param">test_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train all the models in committee.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Type of model, must be one of [bilstm/hybrid-cat/hybrid-add/cnn/bow].</p></li>
+<li><p><strong>embedding_dim</strong> – Length of reserved vocabulary, used to build embedding layer.</p></li>
+<li><p><strong>lstm_hidden</strong> – Dimension of lstm hidden state, used to build bilstm model.</p></li>
+<li><p><strong>fc_input</strong> – Dimension of input full connect layer.</p></li>
+<li><p><strong>fc_hidden</strong> – Dimension of hidden full connect layer.</p></li>
+<li><p><strong>epochs</strong> – How many epochs it trains.</p></li>
+<li><p><strong>lr</strong> – Learning rate.</p></li>
+<li><p><strong>freeze</strong> – Freezing embedding layer or not. if True, weight in embedding layer will not be changed during training.</p></li>
+<li><p><strong>test_path</strong> – Test file path, use to validate the model after every epoch.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="experiments.html" class="btn btn-neutral float-right" title="experiments module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="data_process.html" class="btn btn-neutral float-left" title="data_process module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Muning Wen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

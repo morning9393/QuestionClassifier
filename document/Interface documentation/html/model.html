@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>model module &mdash; Question Classifier 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="question_classifier module" href="question_classifier.html" />
+    <link rel="prev" title="experiments module" href="experiments.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Question Classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data_process.html">data_process module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble.html">ensemble module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="experiments.html">experiments module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">model module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="question_classifier.html">question_classifier module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Question Classifier</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">src</a> &raquo;</li>
+        
+      <li>model module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-model">
+<span id="model-module"></span><h1>model module<a class="headerlink" href="#module-model" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="model.Net">
+<em class="property">class </em><code class="sig-prename descclassname">model.</code><code class="sig-name descname">Net</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">vocab_size</em>, <em class="sig-param">embedding_dim</em>, <em class="sig-param">lstm_hidden</em>, <em class="sig-param">fc_input</em>, <em class="sig-param">fc_hidden</em>, <em class="sig-param">label_size</em>, <em class="sig-param">pre_train_weight=None</em>, <em class="sig-param">freeze=True</em><span class="sig-paren">)</span><a class="headerlink" href="#model.Net" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Contain 5 based models: bilstm/hybrid-cat/hybrid-add/cnn/bow</p>
+<dl class="method">
+<dt id="model.Net.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#model.Net.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Feedforward process, according to model type to decide what to do.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – Input vector, a list of word indexes represents a question.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>50 dimension vector used as input to softmax layer in CrossEntropyLoss().</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="model.QuestionSet">
+<em class="property">class </em><code class="sig-prename descclassname">model.</code><code class="sig-name descname">QuestionSet</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vocabulary_path</em>, <em class="sig-param">labels_path</em>, <em class="sig-param">stop_words_path</em>, <em class="sig-param">pre_train_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Subclass of Dataset, load dataset, vocabulary, labels, stop words and pre-trained embedding.</p>
+<dl class="method">
+<dt id="model.QuestionSet.get_pre_train_weight">
+<code class="sig-name descname">get_pre_train_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.get_pre_train_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get pre-trained embedding weight which build in load_vocabulary().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A VxD tensor matrix, V is the number of word and D is the embedding dimension. None if it is not set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.index2label">
+<code class="sig-name descname">index2label</code><span class="sig-paren">(</span><em class="sig-param">index</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.index2label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the label string according to its position(index).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> – Position of target label in label set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Target label(string).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.index2question">
+<code class="sig-name descname">index2question</code><span class="sig-paren">(</span><em class="sig-param">index</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.index2question" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the question sentence according its position(index).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> – Position of target question in dataset.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Target question sentence.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.label2index">
+<code class="sig-name descname">label2index</code><span class="sig-paren">(</span><em class="sig-param">label</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.label2index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use index number to represent labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>label</strong> – Target label(string).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Position of target label in label set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.label_size">
+<code class="sig-name descname">label_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.label_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the length of label set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An int value indicating the length of label set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.load_dataset">
+<code class="sig-name descname">load_dataset</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.load_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load dataset from file, transfer to a list and assign to self.dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – Data file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.load_labels">
+<code class="sig-name descname">load_labels</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.load_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load labels from file, transfer to a list and assign to self.labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – Label file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.load_pre_train">
+<code class="sig-name descname">load_pre_train</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.load_pre_train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load pre-trained embedding from file, transfer to a dictionary and assign to self.pre_train_words.
+Key is the word and Value is corresponding vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – Pre-trained embedding file path.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dimension of pre-trained word vector.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.load_stop_words">
+<code class="sig-name descname">load_stop_words</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.load_stop_words" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load stop words from file, transfer to a list and assign to self.stop_words.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – Stop word file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.load_vocabulary">
+<code class="sig-name descname">load_vocabulary</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.load_vocabulary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load vocabulary from file, filter out words with frequency less than 3,
+transfer to a list and assign to self.vocabulary.
+If pre-trained embedding is set, only words in pre-trained embedding file will be reserved,
+pre-trained embedding weight is set at the same time.
+All other words are replace with ‘#unk#’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – Vocabulary file path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.question2indexes">
+<code class="sig-name descname">question2indexes</code><span class="sig-paren">(</span><em class="sig-param">question</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.question2indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transfer a question sentence to a list with indexes of words.
+Each index corresponds to a word in vocabulary, used to map word to its embedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>question</strong> – Question sentence.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list with indexes of every word in the question.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="model.QuestionSet.vocab_size">
+<code class="sig-name descname">vocab_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.vocab_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the length of reserved vocabulary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An int value indicating the length of reserved vocabulary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="question_classifier.html" class="btn btn-neutral float-right" title="question_classifier module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="experiments.html" class="btn btn-neutral float-left" title="experiments module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Muning Wen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
