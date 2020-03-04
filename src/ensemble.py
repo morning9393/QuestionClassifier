@@ -7,7 +7,8 @@ import model as md
 class QuestionClassifier:
     """Ensemble of based model, if ensemble size is 1, means a single model and will not apply ensemble strategy."""
 
-    def __init__(self, ensemble_size, data_path, vocabulary_path, labels_path, stop_words_path, pre_train_path=None):
+    def __init__(self, ensemble_size, data_path, vocabulary_path, labels_path, stop_words_path, pre_train_path=None,
+                 k=3):
         """
         Initialising, load data and bootstrapping to generate subset.
 
@@ -17,6 +18,7 @@ class QuestionClassifier:
         :param labels_path: Label file path.
         :param stop_words_path: Stop word file path.
         :param pre_train_path: Pre-trained embedding file path.
+        :param k: k value, only words with frequency >= k will be reserved in vocabulary.
         """
         self.model = None
         self.dataset = []
@@ -28,6 +30,7 @@ class QuestionClassifier:
         self.labels_path = labels_path
         self.stop_words_path = stop_words_path
         self.pre_train_path = pre_train_path
+        self.k = k
         self.load_dataset(data_path)
         self.init_subsets(ensemble_size)
 
@@ -50,13 +53,13 @@ class QuestionClassifier:
         """
         if ensemble_size < 2:
             sub_dataset = md.QuestionSet(self.dataset, self.vocabulary_path, self.labels_path,
-                                         self.stop_words_path, self.pre_train_path)
+                                         self.stop_words_path, self.pre_train_path, self.k)
             self.subsets.append(sub_dataset)
         else:
             for i in range(0, ensemble_size):
                 sample = self.bootstrapping()
                 sub_dataset = md.QuestionSet(sample, self.vocabulary_path, self.labels_path, self.stop_words_path,
-                                             self.pre_train_path)
+                                             self.pre_train_path, self.k)
                 self.subsets.append(sub_dataset)
 
     def bootstrapping(self):
@@ -90,7 +93,7 @@ class QuestionClassifier:
         optimizers = []
         if test_path is not None:
             test_set = md.QuestionSet(test_path, self.vocabulary_path, self.labels_path, self.stop_words_path,
-                                      self.pre_train_path)
+                                      self.pre_train_path, self.k)
         for i in range(0, len(self.subsets)):
             loaders.append(DataLoader(self.subsets[i]))
             net = md.Net(model, self.subsets[i].vocab_size(), embedding_dim, lstm_hidden, fc_input, fc_hidden,
@@ -113,11 +116,10 @@ class QuestionClassifier:
                     optimizers[i].step()
             if test_set is not None:
                 acc, acc_rate = self.test(test_set)
-                print(
-                    'ensemble: %d, model: %s, epoch: %d, pre_train_embedding: %s, freeze: %s, train_set: %s, '
-                    'test_set: %s, acc: %d, acc rate: %f' %
-                    (len(self.subsets), self.model, e + 1, self.pre_train_path, freeze, self.data_path, test_path, acc,
-                     acc_rate))
+                print('ensemble: %d, model: %s, epoch: %d, stop_words: %s, pre_train_embedding: %s, k: %d, freeze: %s,'
+                      ' train_set: %s, test_set: %s, acc: %d, acc rate: %f' %
+                      (len(self.subsets), self.model, e + 1, self.stop_words_path, self.pre_train_path, self.k, freeze,
+                       self.data_path, test_path, acc, acc_rate))
 
     def test(self, data_set, is_cnn=False, print_detail=False):
         """

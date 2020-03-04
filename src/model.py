@@ -6,7 +6,7 @@ import numpy as np
 class QuestionSet(Dataset):
     """Subclass of Dataset, load dataset, vocabulary, labels, stop words and pre-trained embedding."""
 
-    def __init__(self, data, vocabulary_path, labels_path, stop_words_path, pre_train_path=None):
+    def __init__(self, data, vocabulary_path, labels_path, stop_words_path, pre_train_path=None, k=3):
         """
         Initialise QuestionSet
 
@@ -15,6 +15,7 @@ class QuestionSet(Dataset):
         :param labels_path: Label file path.
         :param stop_words_path: Stop word file path.
         :param pre_train_path: Pre-trained embedding file path.
+        :param k: k value, only words with frequency >= k will be reserved in vocabulary.
         """
         self.dataset = []
         self.labels = []
@@ -23,6 +24,7 @@ class QuestionSet(Dataset):
         self.pre_weight = []
         self.pre_train_words = {}
         self.pre_train_path = pre_train_path
+        self.k = k
         if type(data) == str:
             self.load_dataset(data)
         else:
@@ -87,14 +89,14 @@ class QuestionSet(Dataset):
             if self.pre_train_path is None:
                 for line in vocabulary_file:
                     pair = line.split()
-                    if int(pair[1]) > 2:  # k = 3
+                    if int(pair[1]) >= self.k:
                         self.vocabulary.append(pair[0])
             else:
                 pre_train_dim = self.load_pre_train(self.pre_train_path)
                 self.pre_weight.append(np.random.rand(pre_train_dim))
                 for line in vocabulary_file:
                     pair = line.split()
-                    if int(pair[1]) > 2 and pair[0] in self.pre_train_words.keys():  # k = 3
+                    if int(pair[1]) >= self.k and pair[0] in self.pre_train_words.keys():
                         self.vocabulary.append(pair[0])
                         self.pre_weight.append(self.pre_train_words[pair[0]])
 

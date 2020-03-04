@@ -41,6 +41,7 @@ def load_config(path):
         for line in config_file:
             key, value = line.split('=')
             config[key.strip()] = value.strip()
+        config['k'] = int(config['k'])
         config['ensemble_size'] = int(config['ensemble_size'])
         config['embedding_dim'] = int(config['embedding_dim'])
         config['lstm_hidden'] = int(config['lstm_hidden'])
@@ -59,7 +60,8 @@ def train(config):
     :param config: A dictionary with all configuration.
     """
     classifier = en.QuestionClassifier(config['ensemble_size'], config['train_path'], config['vocabulary_path'],
-                                       config['labels_path'], config['stop_words_path'], config['pre_train_path'])
+                                       config['labels_path'], config['stop_words_path'], config['pre_train_path'],
+                                       config['k'])
     classifier.train(config['model'], config['embedding_dim'], config['lstm_hidden'], config['fc_input'],
                      config['fc_hidden'], config['epoch'], config['learning_rate'], config['freeze'],
                      config['test_path'])
@@ -73,10 +75,11 @@ def test(config):
     :param config: A dictionary with all configuration.
     """
     classifier = en.QuestionClassifier(config['ensemble_size'], config['train_path'], config['vocabulary_path'],
-                                       config['labels_path'], config['stop_words_path'], config['pre_train_path'])
+                                       config['labels_path'], config['stop_words_path'], config['pre_train_path'],
+                                       config['k'])
     classifier.load(config['model_path'])
     test_set = md.QuestionSet(config['test_path'], config['vocabulary_path'], config['labels_path'],
-                              config['stop_words_path'], config['pre_train_path'])
+                              config['stop_words_path'], config['pre_train_path'], config['k'])
     f = open(config['output_path'], 'w')
     old = sys.stdout
     sys.stdout = f
