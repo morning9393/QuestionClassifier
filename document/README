@@ -1,3 +1,8 @@
+For interface document:
+1. Description for each function is in document/Interface documentation/html/index.html
+2. Open it with browser .
+
+
 For train and test with config file:
 1. Open command and enter 'src'.
 2. Run command "python3 question_classifier.py [train|test] -config [configuration_file_path]"

@@ -5,21 +5,21 @@ import model as md
 
 
 class QuestionClassifier:
-    """Ensemble of based model, if ensemble size is 1, means a single model and will not apply ensemble strategy."""
+    """
+    Ensemble of based model, if ensemble size is 1, means a single model and will not apply ensemble strategy.
+
+    :param ensemble_size: How many model in this ensemble. If 1, bootstrapping will not be applied.
+    :param data_path: Data file path.
+    :param vocabulary_path: Vocabulary file path.
+    :param labels_path: Label file path.
+    :param stop_words_path: Stop word file path.
+    :param pre_train_path: Pre-trained embedding file path, None for random initialisation.
+    :param k: k value, only words with frequency >= k will be reserved in vocabulary.
+    """
 
     def __init__(self, ensemble_size, data_path, vocabulary_path, labels_path, stop_words_path, pre_train_path=None,
                  k=3):
-        """
-        Initialising, load data and bootstrapping to generate subset.
-
-        :param ensemble_size: How many model in this ensemble. If 1, bootstrapping will not be applied.
-        :param data_path: Data file path.
-        :param vocabulary_path: Vocabulary file path.
-        :param labels_path: Label file path.
-        :param stop_words_path: Stop word file path.
-        :param pre_train_path: Pre-trained embedding file path, None for random initialisation.
-        :param k: k value, only words with frequency >= k will be reserved in vocabulary.
-        """
+        """Initialising, load data and bootstrapping to generate subset."""
         self.model = None
         self.dataset = []
         self.subsets = []

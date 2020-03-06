@@ -4,19 +4,19 @@ import numpy as np
 
 
 class QuestionSet(Dataset):
-    """Subclass of Dataset, load dataset, vocabulary, labels, stop words and pre-trained embedding."""
+    """
+    Subclass of Dataset, load dataset, vocabulary, labels, stop words and pre-trained embedding.
+
+    :param data: Dataset, could be a path or a list.
+    :param vocabulary_path: Vocabulary file path.
+    :param labels_path: Label file path.
+    :param stop_words_path: Stop word file path.
+    :param pre_train_path: Pre-trained embedding file path, None for random initialisation.
+    :param k: k value, only words with frequency >= k will be reserved in vocabulary.
+    """
 
     def __init__(self, data, vocabulary_path, labels_path, stop_words_path, pre_train_path=None, k=3):
-        """
-        Initialise QuestionSet
-
-        :param data: Dataset, could be a path or a list.
-        :param vocabulary_path: Vocabulary file path.
-        :param labels_path: Label file path.
-        :param stop_words_path: Stop word file path.
-        :param pre_train_path: Pre-trained embedding file path, None for random initialisation.
-        :param k: k value, only words with frequency >= k will be reserved in vocabulary.
-        """
+        """Initialise QuestionSet"""
         self.dataset = []
         self.labels = []
         self.vocabulary = []
@@ -49,6 +49,7 @@ class QuestionSet(Dataset):
     def __len__(self):
         """
         Get the length of dataset.
+
         :return: An int value indicating the length of dataset.
         """
         return len(self.dataset)
@@ -202,23 +203,23 @@ class QuestionSet(Dataset):
 
 
 class Net(torch.nn.Module):
-    """Contain 5 based models: bilstm/hybrid-cat/hybrid-add/cnn/bow"""
+    """
+    Contain 5 based models: bilstm/hybrid-cat/hybrid-add/cnn/bow
+
+    :param model: Type of model, must be one of [bilstm/hybrid-cat/hybrid-add/cnn/bow].
+    :param vocab_size: Length of reserved vocabulary, used to build embedding layer.
+    :param embedding_dim: Dimension of word embedding, used to build embedding layer.
+    :param lstm_hidden: Dimension of lstm hidden state, used to build bilstm model.
+    :param fc_input: Dimension of input full connect layer.
+    :param fc_hidden: Dimension of hidden full connect layer.
+    :param label_size: Dimension of output full connect layer. used as input to softmax layer.
+    :param pre_train_weight: Pre-trained embedding weight, a VxD tensor matrix.
+    :param freeze: Freezing embedding layer or not. if True, weight in embedding layer will not be changed during training.
+    """
 
     def __init__(self, model, vocab_size, embedding_dim, lstm_hidden, fc_input, fc_hidden, label_size,
                  pre_train_weight=None, freeze=True):
-        """
-        Initialise model according to parameters.
-
-        :param model: Type of model, must be one of [bilstm/hybrid-cat/hybrid-add/cnn/bow].
-        :param vocab_size: Length of reserved vocabulary, used to build embedding layer.
-        :param embedding_dim: Dimension of word embedding, used to build embedding layer.
-        :param lstm_hidden: Dimension of lstm hidden state, used to build bilstm model.
-        :param fc_input: Dimension of input full connect layer.
-        :param fc_hidden: Dimension of hidden full connect layer.
-        :param label_size: Dimension of output full connect layer. used as input to softmax layer.
-        :param pre_train_weight: Pre-trained embedding weight, a VxD tensor matrix.
-        :param freeze: Freezing embedding layer or not. if True, weight in embedding layer will not be changed during training.
-        """
+        """Initialise model according to parameters."""
         super(Net, self).__init__()
         self.model = model
         self.lstm_hidden = lstm_hidden

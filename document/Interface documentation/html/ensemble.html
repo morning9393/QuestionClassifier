@@ -163,6 +163,19 @@
 <em class="property">class </em><code class="sig-prename descclassname">ensemble.</code><code class="sig-name descname">QuestionClassifier</code><span class="sig-paren">(</span><em class="sig-param">ensemble_size</em>, <em class="sig-param">data_path</em>, <em class="sig-param">vocabulary_path</em>, <em class="sig-param">labels_path</em>, <em class="sig-param">stop_words_path</em>, <em class="sig-param">pre_train_path=None</em>, <em class="sig-param">k=3</em><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Ensemble of based model, if ensemble size is 1, means a single model and will not apply ensemble strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble_size</strong> – How many model in this ensemble. If 1, bootstrapping will not be applied.</p></li>
+<li><p><strong>data_path</strong> – Data file path.</p></li>
+<li><p><strong>vocabulary_path</strong> – Vocabulary file path.</p></li>
+<li><p><strong>labels_path</strong> – Label file path.</p></li>
+<li><p><strong>stop_words_path</strong> – Stop word file path.</p></li>
+<li><p><strong>pre_train_path</strong> – Pre-trained embedding file path, None for random initialisation.</p></li>
+<li><p><strong>k</strong> – k value, only words with frequency &gt;= k will be reserved in vocabulary.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="ensemble.QuestionClassifier.bootstrapping">
 <code class="sig-name descname">bootstrapping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ensemble.QuestionClassifier.bootstrapping" title="Permalink to this definition">¶</a></dt>

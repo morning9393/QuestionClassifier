@@ -163,6 +163,21 @@
 <em class="property">class </em><code class="sig-prename descclassname">model.</code><code class="sig-name descname">Net</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">vocab_size</em>, <em class="sig-param">embedding_dim</em>, <em class="sig-param">lstm_hidden</em>, <em class="sig-param">fc_input</em>, <em class="sig-param">fc_hidden</em>, <em class="sig-param">label_size</em>, <em class="sig-param">pre_train_weight=None</em>, <em class="sig-param">freeze=True</em><span class="sig-paren">)</span><a class="headerlink" href="#model.Net" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <p>Contain 5 based models: bilstm/hybrid-cat/hybrid-add/cnn/bow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Type of model, must be one of [bilstm/hybrid-cat/hybrid-add/cnn/bow].</p></li>
+<li><p><strong>vocab_size</strong> – Length of reserved vocabulary, used to build embedding layer.</p></li>
+<li><p><strong>embedding_dim</strong> – Dimension of word embedding, used to build embedding layer.</p></li>
+<li><p><strong>lstm_hidden</strong> – Dimension of lstm hidden state, used to build bilstm model.</p></li>
+<li><p><strong>fc_input</strong> – Dimension of input full connect layer.</p></li>
+<li><p><strong>fc_hidden</strong> – Dimension of hidden full connect layer.</p></li>
+<li><p><strong>label_size</strong> – Dimension of output full connect layer. used as input to softmax layer.</p></li>
+<li><p><strong>pre_train_weight</strong> – Pre-trained embedding weight, a VxD tensor matrix.</p></li>
+<li><p><strong>freeze</strong> – Freezing embedding layer or not. if True, weight in embedding layer will not be changed during training.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="model.Net.forward">
 <code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#model.Net.forward" title="Permalink to this definition">¶</a></dt>
@@ -184,6 +199,18 @@
 <em class="property">class </em><code class="sig-prename descclassname">model.</code><code class="sig-name descname">QuestionSet</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vocabulary_path</em>, <em class="sig-param">labels_path</em>, <em class="sig-param">stop_words_path</em>, <em class="sig-param">pre_train_path=None</em>, <em class="sig-param">k=3</em><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
 <p>Subclass of Dataset, load dataset, vocabulary, labels, stop words and pre-trained embedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Dataset, could be a path or a list.</p></li>
+<li><p><strong>vocabulary_path</strong> – Vocabulary file path.</p></li>
+<li><p><strong>labels_path</strong> – Label file path.</p></li>
+<li><p><strong>stop_words_path</strong> – Stop word file path.</p></li>
+<li><p><strong>pre_train_path</strong> – Pre-trained embedding file path, None for random initialisation.</p></li>
+<li><p><strong>k</strong> – k value, only words with frequency &gt;= k will be reserved in vocabulary.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="model.QuestionSet.get_pre_train_weight">
 <code class="sig-name descname">get_pre_train_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#model.QuestionSet.get_pre_train_weight" title="Permalink to this definition">¶</a></dt>
