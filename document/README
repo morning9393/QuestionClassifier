@@ -1,0 +1,50 @@
+For train and test with config file:
+1. Open command and enter 'src'.
+2. Run command "python3 question_classifier.py [train|test] -config [configuration_file_path]"
+3. For example: "python3 question_classifier.py train -config ../data/bow.config" is to trian a bow model with config file "../data/bow.config",
+   and "python3 question_classifier.py test -config ../data/bow.config" is to test the trained model with same config.
+4. If you want to change config, you could create or update corresponding config file like "../data/bow.config" above, 
+   but make sure use the same config file for the same model when train and test.
+5. Because all our computers do not support cuda, so cuda have not been applied in our code...
+
+
+For config file:
+1. All parameters are mandatory(except pre_train_path could be set to None) and do not contain any other things inside (like comments).
+2. Parameters and their function are list below:
+
+	train_path: Train set file path. e.g. train_path=../data/train.5000.txt
+	dev_path: Dev set file path. e.g. dev_path=../data/dev.txt
+	test_path: Test set file path. e.g. test_path=../data/test.txt
+	vocabulary_path: Vocabulary file path. e.g. vocabulary_path=../data/vocabulary.txt
+	labels_path: Label file path. e.g. labels_path=../data/labels.txt
+	stop_words_path: Stop word file path. e.g. stop_words_path=../data/stop_words.txt
+	pre_train_path: Pre-trained embedding path, set to None for random initialisation. e.g. pre_train_path=../data/glove.200d.small.txt or pre_train_path=None
+	k: Only words with frequency >= k will be reserved in vocabulary. e.g. k=3
+	model: Type of model, must be one of [bilstm/hybrid-cat/hybrid-add/cnn/bow]. e.g. model=bow
+	ensemble_size: How many model in this ensemble. If 1, bootstrapping will not be applied. e.g. ensemble_size=1
+	model_path: The path your trained model is saved. e.g. model_path=../data/model.bow
+	epoch: How many epochs it trains. e.g. epoch=30
+	embedding_dim: Length of reserved vocabulary, used to build embedding layer. e.g. embedding_dim=200
+	lstm_hidden: Dimension of lstm hidden state, used to build bilstm model. e.g. lstm_hidden=100
+	fc_input: Dimension of input full connect layer. e.g. fc_input=200
+	fc_hidden: Dimension of hidden full connect layer. e.g. fc_hidden=64
+	learning_rate: Learning rate. e.g. learning_rate=0.01
+	freeze: Freezing embedding layer or not. if True, weight in embedding layer will not be changed during training. e.g. freeze=False
+	output_path: The path your test result is stored. e.g. output_path=../data/output.bow.txt
+
+3. For single model(not ensemble): your just need to set ensemble_size=1, bootstrapping will not be applied.
+4. For ensemble: you could set ensemble_size=n, n models will be trained based on bagging algorithm and save like: model_path.0 model_path.1 .... model_path.n-1
+5. You could change the dimension of embedding or pre-trained embedding, but make sure embedding_dim, lstm_hidden, fc_input are adjusted together according to model.
+   Here are some suggestion:
+   hybrid-cat: (embedding_dim=200, lstm_hidden=100, fc_input=400) with default "glove.200d.small.txt" or 
+               (embedding_dim=300, lstm_hidden=150, fc_input=600) with "glove.small.txt"(300d version, provided with courseowrk file).
+   cnn: (embedding_dim=200, fc_input=784) with default "glove.200d.small.txt" or 
+        (embedding_dim=300, fc_input=1184) with "glove.small.txt".
+   others: (embedding_dim=200, lstm_hidden=100, fc_input=200) with default "glove.200d.small.txt" or 
+           (embedding_dim=300, lstm_hidden=150, fc_input=300) with "glove.small.txt".
+
+
+For experiment:
+1. Our experiments are based on 200d embedding, if you want, you could change parameters in experiments.py to 300d follow the rules like config file.
+2. Run experiments.py in command line and wait, result will be writed to data/experiments_output.txt.
+3. Because our ensemble model are based on ENSEMBLE_SIZE=20 and EPOCHS=30, it might take a long time, so you could try to reduce them. e.g. ENSEMBLE_SIZE=5 and EPOCHS=10

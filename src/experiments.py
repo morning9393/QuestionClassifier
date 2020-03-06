@@ -180,19 +180,20 @@ def ex5():
     finish_time = time.asctime(time.localtime(time.time()))
     print('************ ex5 finish %s ************\n\n\n\n' % finish_time)
 
+
 if __name__ == "__main__":
-  print("experiments begin, output transfer to file [../data/experiments_output.txt]......")
-  setup_seed(16)
-  f = open('../data/experiments_output.txt', 'w')
-  old = sys.stdout
-  sys.stdout = f
+    print("experiments begin, output transfer to file [../data/experiments_output.txt]......")
+    setup_seed(16)
+    f = open('../data/experiments_output.txt', 'w')
+    old = sys.stdout
+    sys.stdout = f
 
-  ex1()
-  ex2()
-  ex3()
-  ex4()
-  ex5()
+    ex1()
+    ex2()
+    ex3()
+    ex4()
+    ex5()
 
-  sys.stdout = old
-  f.close()
-  print("experiments finish, output transfer back!")
+    sys.stdout = old
+    f.close()
+    print("experiments finish, output transfer back!")

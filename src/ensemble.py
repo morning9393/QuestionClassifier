@@ -17,7 +17,7 @@ class QuestionClassifier:
         :param vocabulary_path: Vocabulary file path.
         :param labels_path: Label file path.
         :param stop_words_path: Stop word file path.
-        :param pre_train_path: Pre-trained embedding file path.
+        :param pre_train_path: Pre-trained embedding file path, None for random initialisation.
         :param k: k value, only words with frequency >= k will be reserved in vocabulary.
         """
         self.model = None

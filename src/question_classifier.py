@@ -50,6 +50,8 @@ def load_config(path):
         config['epoch'] = int(config['epoch'])
         config['learning_rate'] = float(config['learning_rate'])
         config['freeze'] = config['freeze'] == str(True)
+        if config['pre_train_path'] == 'None':
+            config['pre_train_path'] = None
         return config
 
 

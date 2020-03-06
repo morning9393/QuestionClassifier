@@ -88,6 +88,7 @@ def write_vocabulary():
         vocabs_str = [("%s %d" % (key, value)) for key, value in vocabulary.items()]
         vocabulary_file.write('\n'.join(vocabs_str))
 
+
 if __name__ == "__main__":
     np.random.seed(16)
     write_labels()
