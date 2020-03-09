@@ -39,7 +39,8 @@ For config file:
 
 3. For single model(not ensemble): your just need to set ensemble_size=1, bootstrapping will not be applied.
 4. For ensemble: you could set ensemble_size=n, n models will be trained based on bagging algorithm and save like: model_path.0 model_path.1 .... model_path.n-1
-5. You could change the dimension of embedding or pre-trained embedding, but make sure embedding_dim, lstm_hidden, fc_input are adjusted together according to model.
+5. We use 200d small glove pre-trained embedding in default configuration file. However, you could change that or the dimension of embedding or pre-trained embedding, 
+   but make sure embedding_dim, lstm_hidden, fc_input are adjusted together according to model.
    Here are some suggestion:
    hybrid-cat: (embedding_dim=200, lstm_hidden=100, fc_input=400) with default "glove.200d.small.txt" or 
                (embedding_dim=300, lstm_hidden=150, fc_input=600) with "glove.small.txt"(300d version, provided with courseowrk file).
